@@ -86,61 +86,6 @@ echo "========================================================"
 BASE_MODEL_SOURCE="${BASE_MODEL}"
 export BASE_MODEL_SOURCE
 
-if [ -n "${MODEL_CACHE_ROOT:-}" ]; then
-  MODEL_CACHE_MANIFEST="${MODEL_CACHE_ROOT}/model-cache-manifest.json"
-  [ -f "${MODEL_CACHE_MANIFEST}" ] || {
-    echo "ERROR: model cache manifest not found: ${MODEL_CACHE_MANIFEST}" >&2
-    exit 1
-  }
-  python3 - "${MODEL_CACHE_MANIFEST}" "${BASE_MODEL_REVISION}" <<'PY'
-import json
-import sys
-
-manifest = json.load(open(sys.argv[1], encoding="utf-8"))
-expected = {
-    "nvidia/GR00T-N1.7-3B": sys.argv[2],
-    "nvidia/Cosmos-Reason2-2B": "9ce19a195e423419c349abfc86fd07178b230561",
-}
-actual = {model["repository"]: model["revision"] for model in manifest["models"]}
-if actual != expected:
-    raise RuntimeError(f"model cache revisions do not match: {actual}")
-PY
-  CACHED_BASE_MODEL="${MODEL_CACHE_ROOT}/groot-n17"
-  CACHED_BACKBONE_MODEL="${MODEL_CACHE_ROOT}/cosmos-reason2-2b"
-  [ -f "${CACHED_BASE_MODEL}/config.json" ] || {
-    echo "ERROR: cached GR00T config is missing" >&2
-    exit 1
-  }
-  [ -f "${CACHED_BACKBONE_MODEL}/config.json" ] || {
-    echo "ERROR: cached Cosmos config is missing" >&2
-    exit 1
-  }
-  BASE_MODEL_LOCAL="/tmp/base_model"
-  LOCAL_BACKBONE_MODEL="/tmp/nvidia/Cosmos-Reason2-2B"
-  rm -rf "${BASE_MODEL_LOCAL}"
-  rm -rf "${LOCAL_BACKBONE_MODEL}"
-  mkdir -p "${BASE_MODEL_LOCAL}"
-  mkdir -p "$(dirname "${LOCAL_BACKBONE_MODEL}")"
-  ln -s "${CACHED_BACKBONE_MODEL}" "${LOCAL_BACKBONE_MODEL}"
-  find "${CACHED_BASE_MODEL}" -mindepth 1 -maxdepth 1 ! -name config.json \
-    -exec ln -s '{}' "${BASE_MODEL_LOCAL}/" \;
-  python3 - "${CACHED_BASE_MODEL}/config.json" "${BASE_MODEL_LOCAL}/config.json" "${LOCAL_BACKBONE_MODEL}" <<'PY'
-import json
-import sys
-
-with open(sys.argv[1], encoding="utf-8") as stream:
-    config = json.load(stream)
-config["model_name"] = sys.argv[3]
-with open(sys.argv[2], "w", encoding="utf-8") as stream:
-    json.dump(config, stream, indent=2)
-    stream.write("\n")
-PY
-  BASE_MODEL="${BASE_MODEL_LOCAL}"
-  export HF_HUB_OFFLINE=1
-  export TRANSFORMERS_OFFLINE=1
-  echo "[base-model] using immutable AML model cache"
-fi
-
 NUM_GPUS="${NUM_GPUS:-1}"
 if ! printf '%s' "${NUM_GPUS}" | grep -qE '^[1-9][0-9]*$'; then
   echo "ERROR: NUM_GPUS must be a positive integer (got '${NUM_GPUS}')" >&2
@@ -270,23 +215,6 @@ if count != 1:
     raise RuntimeError(f"expected one upstream non-deterministic resume block, found {count}")
 path.write_text(source.replace(needle, replacement), encoding="utf-8")
 print("[setup] patched N1.7 Trainer for deterministic data resume")
-PY
-fi
-
-if [ -n "${MODEL_CACHE_ROOT:-}" ]; then
-  python3 - "gr00t/model/gr00t_n1d7/setup.py" <<'PY'
-from pathlib import Path
-import sys
-
-path = Path(sys.argv[1])
-source = path.read_text(encoding="utf-8")
-needle = "model_name=self.model_config.model_name,"
-replacement = "model_name=self.model.config.model_name,"
-count = source.count(needle)
-if count != 2:
-    raise RuntimeError(f"expected two upstream processor model-name call sites, found {count}")
-path.write_text(source.replace(needle, replacement), encoding="utf-8")
-print("[setup] patched N1.7 processor to use the cached backbone path")
 PY
 fi
 

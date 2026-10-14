@@ -23,7 +23,6 @@ command: >-
   DATASET_PATH="${{inputs.dataset}}"
   OUTPUT_ROOT="${{outputs.checkpoints}}"
   RESUME_CHECKPOINT="${{inputs.dataset}}"
-  MODEL_CACHE_ROOT=""
   bash vla/scripts/groot/azureml-train-entry.sh
 
 environment_variables:

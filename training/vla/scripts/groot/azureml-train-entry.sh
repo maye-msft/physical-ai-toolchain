@@ -131,7 +131,6 @@ export DATALOADER_WORKERS="${DATALOADER_WORKERS:-4}"
 export NUM_GPUS="${NUM_GPUS:-2}"
 export RUN_ID_OVERRIDE="${RUN_ID_OVERRIDE:-training}"
 export AZURE_UPLOAD="${AZURE_UPLOAD:-false}"
-export MODEL_CACHE_ROOT="${MODEL_CACHE_ROOT:-}"
 
 if [ "${AZURE_UPLOAD}" = "true" ]; then
   : "${AZUREML_MODEL_NAME:?AZUREML_MODEL_NAME is required when AZURE_UPLOAD=true}"

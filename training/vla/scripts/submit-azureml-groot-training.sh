@@ -40,8 +40,6 @@ Training:
                             embeds it into the immutable Azure ML job.
   --base-model ID           Hugging Face model ID.
   --base-model-revision SHA Immutable 40-character model commit.
-  --model-cache-asset URI   Immutable AML URI-folder asset containing the
-                            GR00T N1.7 and Cosmos backbone snapshots.
   --groot-ref SHA           Immutable 40-character Isaac-GR00T commit.
   --hf-token TOKEN          Hugging Face token for gated model access.
   --hf-token-secret-url URL Azure Key Vault secret URL resolved at runtime by
@@ -82,7 +80,6 @@ num_gpus="${NUM_GPUS:-2}"
 modality_config="${MODALITY_CONFIG_PATH:-}"
 base_model="${BASE_MODEL:-nvidia/GR00T-N1.7-3B}"
 base_model_revision="${BASE_MODEL_REVISION:-2fc962b973bccdd5d8ce4f67cc63b264d6886495}"
-model_cache_asset="${MODEL_CACHE_ASSET:-}"
 groot_ref="${ISAAC_GROOT_REF:-23ace64f17aa5015259b8609d371eb61a357c776}"
 hf_token="${HF_TOKEN:-}"
 hf_token_secret_url="${HF_TOKEN_SECRET_URL:-}"
@@ -116,7 +113,6 @@ while [[ $# -gt 0 ]]; do
     --modality-config) modality_config="$2"; shift 2 ;;
     --base-model) base_model="$2"; shift 2 ;;
     --base-model-revision) base_model_revision="$2"; shift 2 ;;
-    --model-cache-asset) model_cache_asset="$2"; shift 2 ;;
     --groot-ref) groot_ref="$2"; shift 2 ;;
     --hf-token) hf_token="$2"; shift 2 ;;
     --hf-token-secret-url) hf_token_secret_url="$2"; shift 2 ;;
@@ -173,7 +169,7 @@ if [[ -n "${hf_token_secret_url}" ]]; then
     fatal "--hf-token-secret-url must be a versioned or unversioned Azure Key Vault secret URL"
 fi
 if [[ "${preflight_only}" != "true" && "${base_model}" == "nvidia/GR00T-N1.7-3B" ]]; then
-  [[ -n "${model_cache_asset}" || -n "${hf_token}" || -n "${hf_token_secret_url}" ]] || fatal \
+  [[ -n "${hf_token}" || -n "${hf_token_secret_url}" ]] || fatal \
     "GR00T N1.7 loads gated nvidia/Cosmos-Reason2-2B; provide approved Hugging Face access via --hf-token-secret-url"
 fi
 
@@ -185,15 +181,6 @@ if [[ -n "${dataset_asset}" ]]; then
   esac
   [[ "${asset_version}" =~ ^(0|[1-9][0-9]*)$ ]] || fatal \
     "--dataset-asset version must be a canonical integer (got '${dataset_asset}')"
-fi
-if [[ -n "${model_cache_asset}" ]]; then
-  case "${model_cache_asset}" in
-    azureml://*/data/*/versions/*) model_asset_version="${model_cache_asset##*/versions/}" ;;
-    azureml:*:*) model_asset_version="${model_cache_asset##*:}" ;;
-    *) fatal "--model-cache-asset must use azureml:NAME:VERSION or a full versioned Azure ML data URI" ;;
-  esac
-  [[ "${model_asset_version}" =~ ^(0|[1-9][0-9]*)$ ]] || fatal \
-    "--model-cache-asset version must be a canonical integer"
 fi
 
 if [[ -n "${register_model}" ]]; then
@@ -213,7 +200,6 @@ if [[ "${config_preview}" == "true" ]]; then
   print_kv "Max Steps" "${max_steps}"
   print_kv "Modality Config" "${modality_config}"
   print_kv "Base Model" "${base_model}@${base_model_revision}"
-  print_kv "Model Cache" "${model_cache_asset:-<none>}"
   print_kv "Isaac-GR00T" "${groot_ref}"
   print_kv "Preflight Only" "${preflight_only}"
   print_kv "Resume Checkpoint" "${resume_checkpoint:-<none>}"
@@ -235,7 +221,7 @@ managed_identity_client_id="$(resolve_azureml_compute_identity_client_id \
   "${compute}" "${resource_group}" "${workspace_name}")"
 modality_config_b64="$(base64 < "${modality_config}" | tr -d '\n')"
 resolved_job_file="${job_file}"
-if [[ -n "${resume_checkpoint}" || -n "${model_cache_asset}" ]]; then
+if [[ -n "${resume_checkpoint}" ]]; then
   require_tools cp mktemp sed
   resolved_job_file="$(mktemp)"
   trap 'rm -f "${resolved_job_file}"' EXIT
@@ -249,16 +235,6 @@ if [[ -n "${resume_checkpoint}" ]]; then
     mode: ro_mount\
 ' \
     -e 's|RESUME_CHECKPOINT="${{inputs.dataset}}"|RESUME_CHECKPOINT="${{inputs.resume_checkpoint}}"|' \
-    "${resolved_job_file}"
-fi
-if [[ -n "${model_cache_asset}" ]]; then
-  sed -i \
-    -e '/^command: >-$/i\
-  model_cache:\
-    type: uri_folder\
-    mode: ro_mount\
-' \
-    -e 's|MODEL_CACHE_ROOT=""|MODEL_CACHE_ROOT="${{inputs.model_cache}}"|' \
     "${resolved_job_file}"
 fi
 
@@ -293,8 +269,6 @@ az_args=(
 [[ -n "${hf_token}" ]] && az_args+=(--set "environment_variables.HF_TOKEN=${hf_token}")
 [[ -n "${hf_token_secret_url}" ]] && \
   az_args+=(--set "environment_variables.HF_TOKEN_SECRET_URL=${hf_token_secret_url}")
-[[ -n "${model_cache_asset}" ]] && \
-  az_args+=(--set "inputs.model_cache.path=${model_cache_asset}")
 if [[ -n "${resume_checkpoint}" ]]; then
   az_args+=(
     --set "inputs.resume_checkpoint.path=${resume_checkpoint}"
