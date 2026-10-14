@@ -32,6 +32,15 @@ latest_checkpoint() {
     | cut -d' ' -f2- || true
 }
 
+# Install into the interpreter that runs the job; uv-created GR00T venvs ship without pip.
+python_install() {
+  if [ -n "${VIRTUAL_ENV:-}" ] && command -v uv >/dev/null 2>&1; then
+    uv pip install --python "${VIRTUAL_ENV}/bin/python" "$@"
+  else
+    pip install "$@"
+  fi
+}
+
 if [ -d "${DATASET_PATH}" ] && [ -n "$(ls -A "${DATASET_PATH}" 2>/dev/null)" ]; then
   echo "--- using existing local dataset at ${DATASET_PATH} ---"
   ls -lh "${DATASET_PATH}/" | head
@@ -41,7 +50,7 @@ elif [ -n "${BLOB_URL:-}" ]; then
   export DEBIAN_FRONTEND=noninteractive
   retry_cmd 3 apt-get update -qq
   retry_cmd 3 apt-get install -y --no-install-recommends curl >/dev/null
-  pip install --quiet azure-storage-blob==12.27.1 azure-identity==1.25.3
+  python_install --quiet azure-storage-blob==12.27.1 azure-identity==1.25.3
   python3 /tmp/download_blob.py
   echo "--- dataset download complete ---"
   ls -lh "${DATASET_PATH}/" | head
@@ -511,7 +520,7 @@ if [ "${AZURE_UPLOAD:-false}" = "true" ]; then
     echo "AZURE_UPLOAD=true but AZUREML_WORKSPACE_NAME or AZURE_SUBSCRIPTION_ID not set. Skipping." >&2
   else
     echo "--- mirroring run to Azure ML ---"
-    pip install --quiet \
+    python_install --quiet \
       'mlflow==2.22.5' \
       'azureml-mlflow==1.62.0.post3' \
       'azure-identity==1.25.3' \
@@ -536,7 +545,7 @@ if [ -n "${ACR_REGISTRY:-}" ]; then
   chmod +x /usr/local/bin/oras
   rm -f "oras_${ORAS_VERSION}_linux_amd64.tar.gz"
 
-  pip install --quiet azure-identity==1.25.3
+  python_install --quiet azure-identity==1.25.3
   ACR_HOST="${ACR_REGISTRY}.azurecr.io"
   az login --identity --allow-no-subscriptions 2>/dev/null && \
     az acr login --name "${ACR_REGISTRY}" 2>/dev/null || {

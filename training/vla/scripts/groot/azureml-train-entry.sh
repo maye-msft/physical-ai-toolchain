@@ -63,7 +63,7 @@ if [ "${RESUME:-false}" = "true" ]; then
       tail -n 1
   )"
   [ -n "${latest_resume_checkpoint}" ] || {
-    echo "ERROR: resume checkpoint input contains no trainer_state.json" >&2
+    echo "ERROR: resume checkpoint input contains no checkpoint-* directory" >&2
     exit 1
   }
   [ -f "${latest_resume_checkpoint}/trainer_state.json" ] || {
@@ -147,4 +147,4 @@ if [ "${AZURE_UPLOAD}" = "true" ]; then
   cp "${TRAINING_ROOT}/utils/aml_mirror.py" /tmp/aml_mirror.py
 fi
 
-exec "${SCRIPT_DIR}/osmo-train-entry.sh"
+exec bash "${SCRIPT_DIR}/osmo-train-entry.sh"

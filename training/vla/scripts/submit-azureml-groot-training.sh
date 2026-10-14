@@ -222,20 +222,29 @@ managed_identity_client_id="$(resolve_azureml_compute_identity_client_id \
 modality_config_b64="$(base64 < "${modality_config}" | tr -d '\n')"
 resolved_job_file="${job_file}"
 if [[ -n "${resume_checkpoint}" ]]; then
-  require_tools cp mktemp sed
+  require_tools awk grep mktemp
   resolved_job_file="$(mktemp)"
   trap 'rm -f "${resolved_job_file}"' EXIT
-  cp "${job_file}" "${resolved_job_file}"
-fi
-if [[ -n "${resume_checkpoint}" ]]; then
-  sed -i \
-    -e '/^command: >-$/i\
-  resume_checkpoint:\
-    type: uri_folder\
-    mode: ro_mount\
-' \
-    -e 's|RESUME_CHECKPOINT="${{inputs.dataset}}"|RESUME_CHECKPOINT="${{inputs.resume_checkpoint}}"|' \
-    "${resolved_job_file}"
+  # Portable across GNU and BSD userlands: literal match, no regex or in-place edit.
+  awk '
+    $0 == "command: >-" {
+      print "  resume_checkpoint:"
+      print "    type: uri_folder"
+      print "    mode: ro_mount"
+    }
+    {
+      needle = "RESUME_CHECKPOINT=\"${{inputs.dataset}}\""
+      i = index($0, needle)
+      if (i > 0) {
+        $0 = substr($0, 1, i - 1) "RESUME_CHECKPOINT=\"${{inputs.resume_checkpoint}}\"" substr($0, i + length(needle))
+      }
+      print
+    }
+  ' "${job_file}" > "${resolved_job_file}"
+  grep -qF 'RESUME_CHECKPOINT="${{inputs.resume_checkpoint}}"' "${resolved_job_file}" || \
+    fatal "Failed to wire resume_checkpoint input into ${job_file}"
+  grep -qx '  resume_checkpoint:' "${resolved_job_file}" || \
+    fatal "Failed to declare resume_checkpoint input in ${job_file}"
 fi
 
 az_args=(
