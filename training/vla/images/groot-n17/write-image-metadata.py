@@ -21,12 +21,12 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
 
-    actual = {
-        name: importlib.metadata.version(name)
-        for name in EXPECTED_RUNTIME
-    }
+    actual = {name: importlib.metadata.version(name) for name in EXPECTED_RUNTIME}
     if actual != EXPECTED_RUNTIME:
-        raise RuntimeError(f"locked runtime differs from Item 9: {actual}")
+        raise RuntimeError(
+            "GR00T N1.7 runtime must match the pinned CUDA, PyTorch, and NumPy ABI; "
+            f"expected {EXPECTED_RUNTIME}, found {actual}"
+        )
 
     args.output.write_text(
         json.dumps(

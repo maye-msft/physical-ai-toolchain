@@ -187,7 +187,7 @@ print(f"[setup] patched N1.7 trainer resume={resume_literal}")
 PY
 fi
 
-if [ "${RESUME:-false}" = "true" ]; then
+if [ "${RESUME:-false}" = "true" ] && [ -f "gr00t/experiment/experiment.py" ]; then
   python3 - "gr00t/experiment/trainer.py" <<'PY'
 from pathlib import Path
 import sys

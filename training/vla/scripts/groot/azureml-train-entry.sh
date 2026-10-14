@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
+# cspell:ignore clientid
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TRAINING_ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
@@ -87,19 +88,28 @@ import os
 import urllib.parse
 import urllib.request
 
+# Azure ML jobs expose the compute identity through a per-job MSI endpoint, not VM IMDS.
+msi_endpoint = os.environ.get("MSI_ENDPOINT")
+msi_secret = os.environ.get("MSI_SECRET")
+if not msi_endpoint or not msi_secret:
+    raise RuntimeError(
+        "MSI_ENDPOINT and MSI_SECRET are required to read HF_TOKEN_SECRET_URL; "
+        "submit the job with a managed identity"
+    )
 identity_query = {
-    "api-version": "2018-02-01",
+    "api-version": "2017-09-01",
     "resource": "https://vault.azure.net",
 }
-if os.environ.get("AZURE_CLIENT_ID"):
-    identity_query["client_id"] = os.environ["AZURE_CLIENT_ID"]
-identity_url = (
-    "http://169.254.169.254/metadata/identity/oauth2/token?"
-    + urllib.parse.urlencode(identity_query)
+client_id = os.environ.get("AZURE_CLIENT_ID") or os.environ.get("DEFAULT_IDENTITY_CLIENT_ID")
+if client_id:
+    identity_query["clientid"] = client_id
+separator = "&" if "?" in msi_endpoint else "?"
+identity_request = urllib.request.Request(
+    msi_endpoint + separator + urllib.parse.urlencode(identity_query),
+    headers={"secret": msi_secret},
 )
-identity_request = urllib.request.Request(identity_url, headers={"Metadata": "true"})
-imds_opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
-with imds_opener.open(identity_request, timeout=30) as response:
+msi_opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+with msi_opener.open(identity_request, timeout=30) as response:
     access_token = json.load(response)["access_token"]
 
 secret_url = os.environ["HF_TOKEN_SECRET_URL"]
