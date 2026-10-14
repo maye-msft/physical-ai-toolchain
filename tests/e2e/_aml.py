@@ -5,7 +5,7 @@ import os
 import re
 import subprocess
 import tempfile
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -420,6 +420,129 @@ def submit_aml_vla_pi0_training(
         raise AssertionError(f"AzureML VLA pi0 e2e submission failed\n\n{format_command_failure(result)}")
 
     return _aml_job_from_submission(result, aml_workspace, experiment_name, "AzureML VLA pi0 training")
+
+
+def register_aml_uri_folder_data_asset(
+    repo_root: Path,
+    aml_workspace: AzureMLWorkspace,
+    *,
+    name: str,
+    version: str,
+    local_path: Path,
+) -> str:
+    """Upload a local folder as a versioned URI-folder data asset and return its ``azureml:`` reference."""
+    log_e2e(f"Registering AzureML data asset {name}:{version} from {local_path}")
+    result = run_command(
+        [
+            "az",
+            "ml",
+            "data",
+            "create",
+            "--name",
+            name,
+            "--version",
+            version,
+            "--type",
+            "uri_folder",
+            "--path",
+            str(local_path),
+            *aml_workspace_args(aml_workspace),
+            "-o",
+            "json",
+        ],
+        cwd=repo_root,
+    )
+    if result.returncode != 0:
+        raise AssertionError(
+            f"Failed to register AzureML data asset {name}:{version}\n\n{format_command_failure(result)}"
+        )
+    return f"azureml:{name}:{version}"
+
+
+def submit_aml_groot_n17_training(
+    repo_root: Path,
+    aml_workspace: AzureMLWorkspace,
+    *,
+    dataset_asset: str,
+    modality_config: Path,
+    hf_token_secret_url: str,
+    num_gpus: int,
+    batch_size: int,
+    max_steps: int,
+    save_steps: int,
+    preflight_only: bool = False,
+    resume_checkpoint: str | None = None,
+    register_model_name: str | None = None,
+) -> AzureMLJob:
+    phase = "preflight" if preflight_only else "resume" if resume_checkpoint else "train"
+    experiment_name = e2e_name(f"groot-n17-{phase}-e2e-aml")
+    instance_type = os.environ.get("E2E_AML_INSTANCE_TYPE", "")
+    log_e2e(
+        f"Submitting AzureML GR00T N1.7 {phase} job for dataset={dataset_asset}, num_gpus={num_gpus}, "
+        f"batch_size={batch_size}, max_steps={max_steps}, save_steps={save_steps}, "
+        f"resume_checkpoint={resume_checkpoint or '<none>'}, register_model={register_model_name or '<none>'}, "
+        f"experiment={experiment_name}, instance_type={instance_type or '<managed-compute>'}"
+    )
+    args = [
+        str(repo_root / "training/vla/scripts/submit-azureml-groot-training.sh"),
+        "--dataset-asset",
+        dataset_asset,
+        "--modality-config",
+        str(modality_config),
+        # Clear any ambient HF_TOKEN so the job resolves the token from Key Vault only.
+        "--hf-token",
+        "",
+        "--hf-token-secret-url",
+        hf_token_secret_url,
+        "--num-gpus",
+        str(num_gpus),
+        "--batch-size",
+        str(batch_size),
+        "--max-steps",
+        str(max_steps),
+        "--save-steps",
+        str(save_steps),
+        "--dataloader-workers",
+        "1",
+        "--experiment-name",
+        experiment_name,
+        *_submit_workspace_args(aml_workspace),
+    ]
+    if instance_type:
+        args += ["--instance-type", instance_type]
+    if preflight_only:
+        args.append("--preflight-only")
+    if resume_checkpoint:
+        args += ["--resume-checkpoint", resume_checkpoint]
+    if register_model_name:
+        args += ["--register-model", register_model_name]
+
+    result = run_command(args, cwd=repo_root)
+    if result.returncode != 0:
+        raise AssertionError(f"AzureML GR00T N1.7 {phase} submission failed\n\n{format_command_failure(result)}")
+
+    return _aml_job_from_submission(result, aml_workspace, experiment_name, f"AzureML GR00T N1.7 {phase}")
+
+
+def aml_job_output_datastore_uri(job: AzureMLJob, repo_root: Path, output_name: str) -> str:
+    """Resolve a job's named output to a datastore URI accepted as a command-job input path."""
+    outputs = fetch_aml_job_payload(job, repo_root).get("outputs")
+    output = outputs.get(output_name) if isinstance(outputs, Mapping) else None
+    path = output.get("path") if isinstance(output, Mapping) else None
+    if isinstance(path, str) and path.startswith("azureml://") and "/datastores/" in path:
+        return path
+    # Outputs without an explicit path upload to the workspace default datastore location.
+    return f"azureml://datastores/workspaceblobstore/paths/azureml/{job.name}/{output_name}/"
+
+
+def assert_aml_job_logs_contain(job: AzureMLJob, repo_root: Path, markers: Sequence[str]) -> str:
+    """Download the job's user logs and assert that every marker appears."""
+    logs = fetch_aml_job_logs(job, repo_root)
+    missing = [marker for marker in markers if marker not in logs]
+    if missing:
+        raise AssertionError(f"AzureML job {job.name!r} logs did not contain {missing}")
+    log_e2e(f"AzureML job {job.name} logs contained {list(markers)}")
+    return logs
 
 
 _AML_LEROBOT_EVAL_MODEL_ENV = "E2E_AML_LEROBOT_EVAL_MODEL"
