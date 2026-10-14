@@ -7,6 +7,7 @@ activex
 acunetix
 addfinalizer
 addinivalue
+addopts
 adobe
 adrm
 adrs
@@ -140,6 +141,7 @@ buildpack
 bulletsprint
 byol
 byos
+cacheprovider
 caching
 caffe
 cannery
@@ -166,6 +168,7 @@ chatagent
 chatbot
 chatbots
 chatlog
+chatlogs
 chatmode
 chatmodes
 cheatham
@@ -226,6 +229,7 @@ codecommit
 codefresh
 codegen
 codeless
+codemods
 codeowners
 codeql
 codespace
@@ -789,6 +793,7 @@ mkdir
 mklink
 mlflow
 mlops
+mmdd
 moby
 modbus
 Modelica
@@ -1190,6 +1195,7 @@ saas
 salesforce
 sampling
 sandboxed
+sandboxing
 Sankey
 sap
 Sarbanes
@@ -1301,6 +1307,7 @@ stonith
 stopwords
 storsimple
 strategizing
+strerror
 striim
 strpos
 stylecop
@@ -1418,6 +1425,7 @@ trivy
 trufflehog
 trustexitcode
 tryfirst
+trylast
 turbonomic
 twilio
 typeparam
@@ -1685,7 +1693,6 @@ savez
 secretproviderclass
 smpl
 sslmode
-stosmorbt
 tensordict
 testuser
 ueks
@@ -1696,6 +1703,7 @@ acrdev
 eeuo
 gpustat
 libsm
+libsvtav
 libvulkan
 libxext
 libxrender
@@ -1798,3 +1806,29 @@ vsmagent
 vsmserver
 WEBACCESS
 WEBADM
+
+# Docusaurus accessibility terms
+activedescendant
+bday
+bgsound
+columnheader
+contentinfo
+easyops
+foreignobject
+guidepup
+haspopup
+hideable
+hrefs
+impp
+labelledby
+networkidle
+noopener
+noreferrer
+ongesturestart
+posinset
+setsize
+stylesheet
+textareas
+unclipped
+unreviewed
+zoomable

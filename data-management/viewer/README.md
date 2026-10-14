@@ -2,7 +2,7 @@
 title: Dataset Analysis Tool
 description: Run and configure the web application for analyzing and annotating episode-based robotics datasets
 author: Microsoft
-ms.date: 2026-09-17
+ms.date: 2026-10-12
 ms.topic: overview
 ---
 
@@ -10,19 +10,25 @@ A full-stack application for analyzing and annotating robotic training data from
 
 ## 🏗️ Architecture
 
-| Component | Stack | Default port |
-| --- | --- | --- |
-| Backend | FastAPI and Python | 8000 |
-| Frontend | React, Vite, and TypeScript | 5173 |
+| Component | Stack                       | Default port |
+|-----------|-----------------------------|--------------|
+| Backend   | FastAPI and Python          | 8000         |
+| Frontend  | React, Vite, and TypeScript | 5173         |
 
 ## 📋 Prerequisites
 
-| Tool | Version |
-| --- | --- |
-| Python | 3.12+ |
-| Node.js | 24+ |
-| npm | Bundled with Node.js |
-| uv | Current stable release |
+| Tool    | Version                |
+|---------|------------------------|
+| Python  | 3.12+                  |
+| Node.js | 24+                    |
+| npm     | Bundled with Node.js   |
+| uv      | Current stable release |
+| ffmpeg  | Current stable release |
+
+The backend container image installs `ffmpeg`. When you run the backend outside it, put `ffmpeg` on `PATH`:
+
+- HDF5 datasets need it, or OpenCV, to stream camera images as video. Without either, their camera video is unavailable.
+- LeRobot datasets play without it, but each episode then loads its camera's whole video file instead of the episode's clip.
 
 ## 📦 Installation
 
@@ -31,12 +37,8 @@ A full-stack application for analyzing and annotating robotic training data from
 ```bash
 cd backend
 
-# Create virtual environment (using uv)
-uv venv --python 3.12
-source .venv/bin/activate
-
-# Install dependencies (include 'azure' extra for blob storage support)
-uv pip install -e ".[dev,export,azure]"
+# Install locked dependencies (include 'azure' extra for blob storage support)
+uv sync --frozen --python 3.12 --group dev --extra export --extra azure
 ```
 
 ### Frontend Setup
@@ -48,6 +50,26 @@ npm ci
 
 The repository root lockfile is the source of truth for the frontend npm workspace.
 
+From the repository root on Bash hosts, launch against a captured dataset parent without changing environment files:
+
+```bash
+bash data-management/viewer/start.sh --check
+bash data-management/viewer/start.sh --config-preview --data-dir /path/to/datasets
+bash data-management/viewer/start.sh --data-dir /path/to/datasets
+```
+
+The launcher resolves Vite from the npm workspace, binds both services to loopback,
+and fails if either service exits or misses readiness. It requires the selected ports
+to be available; it does not switch to a different frontend port. Optional VLM settings
+may be omitted from `backend/.env`.
+
+`--config-preview` prints resolved launch arguments without checking dependencies or
+starting services. Set `NO_COLOR=1` to disable colored launcher output.
+
+Use **Save & Next Episode** to save labels and continue reviewing. The last episode
+shows **Save Episode** instead. A successful save updates the saved baseline without
+restoring an older browser draft; later label edits remain unsaved until the next save.
+
 ### Dev Container
 
 Open the repository in its VS Code devcontainer or GitHub Codespaces for a preconfigured Python, Node.js, npm, and uv environment. Ports 5173 and 8000 are forwarded for the frontend and backend.
@@ -57,6 +79,71 @@ Run the cross-platform development command after the container finishes setup:
 ```bash
 npm run dataviewer:dev
 ```
+
+## 📊 AI Analysis
+
+The [AI-analysis endpoints](backend/src/api/routes/ai_analysis.py) require nonempty, rectangular position and force matrices containing only finite numbers. Invalid matrices return HTTP 400. `POST /api/ai/cluster` requires at least two trajectories; an explicit `num_clusters` must be between 2 and 20 and cannot exceed the number of trajectories.
+
+The [clustering service](backend/src/api/services/clustering.py) applies a shared scale to extreme coordinate magnitudes before extracting features when squared statistics or path lengths risk overflowing float64. Ordinary coordinate magnitudes retain their original feature calculation.
+
+## 📄 Accepted Dataset Contract
+
+Local dataset exporters can write `accepted-dataset.json` beside
+`capture-provenance.json` and `export-validation.json` in the dataset directory.
+`GET /api/datasets/{id}/capabilities` returns its validated metadata as
+`dataset_contract`; datasets without this optional descriptor remain supported.
+Blob-only datasets do not fetch these sidecars automatically.
+
+Version 1 has this structure. Replace the example identities and hash placeholders
+with the exporter's values:
+
+```json
+{
+  "schema_version": 1,
+  "dataset_id": "sample-dataset",
+  "output_adapter_id": "lerobot_v3",
+  "output_adapter_version": "0.6.0",
+  "viewer_adapter_id": "dataviewer_v1",
+  "profile_id": "sample-profile",
+  "profile_sha256": "<profile-sha256>",
+  "capture_features": [
+    {"feature_id": "state", "kind": "observation_state"}
+  ],
+  "sensors": [
+    {"sensor_id": "front", "media_kind": "rgb"}
+  ],
+  "artifacts": {
+    "capture_provenance": {
+      "file": "capture-provenance.json",
+      "sha256": "<sha256-of-capture-provenance.json>"
+    },
+    "export_validation": {
+      "file": "export-validation.json",
+      "sha256": "<sha256-of-export-validation.json>"
+    }
+  }
+}
+```
+
+All identity fields are required strings. `capture_features` and `sensors` are
+required arrays of objects, including when empty. `dataset_id` must match the
+requested dataset ID; nested dataset IDs use the viewer's `--` separator.
+The two artifact filenames are fixed, and each SHA-256 must match the file's exact
+bytes, including whitespace.
+
+The response follows the shared
+[AcceptedDatasetContract model](backend/src/api/models/datasources.py).
+It exposes the two verified digests as `capture_provenance_sha256` and
+`export_validation_sha256` instead of returning the descriptor's `artifacts` map.
+Matching hashes establish consistency with the descriptor, not authenticity or
+semantic validity of an export. The producing adapter owns profile, feature,
+sensor, and export validation.
+
+A missing descriptor yields `dataset_contract: null`. Malformed JSON, missing or
+mistyped fields, missing artifacts, and hash mismatches also yield `null` with a
+backend warning rather than breaking the capabilities endpoint. Workflows that
+require an accepted dataset must treat `null` as an unmet contract and stop before
+annotation or training.
 
 ## ⚙️ Configuration
 
@@ -75,6 +162,8 @@ The cross-platform npm launcher loads backend defaults from `backend/.env.exampl
 STORAGE_BACKEND=local
 DATA_DIR=/path/to/your/datasets
 ```
+
+The backend lists every dataset folder under `DATA_DIR`, up to five levels deep, and joins nested folder names with `--` in the dataset ID. It skips folders whose names start with `.`, including an export's hidden staging folder.
 
 ### Azure Blob Storage
 
@@ -113,6 +202,7 @@ Expected blob structure:
 | `AZURE_STORAGE_SAS_TOKEN`            | —               | SAS token (omit to use DefaultAzureCredential / MSI)           |
 | `BACKEND_HOST`                       | `127.0.0.1`     | Bind address (`0.0.0.0` for containers)                        |
 | `BACKEND_PORT`                       | `8000`          | API server port                                                |
+| `LOG_LEVEL`                          | `info`          | Uvicorn log level                                              |
 | `FRONTEND_PORT`                      | `5173`          | Dev server port                                                |
 | `CORS_ORIGINS`                       | localhost ports | Comma-separated allowed CORS origins                           |
 
@@ -319,11 +409,13 @@ The application supports Microsoft Entra ID (Azure AD) authentication for public
 ### Entra ID Prerequisites
 
 1. An [Azure AD app registration](https://learn.microsoft.com/entra/identity-platform/quickstart-register-app) with:
-   - **Single-page application** redirect URI set to your frontend URL (e.g., `http://localhost:5173` for local dev, `https://your-app.azurecontainerapps.io` for production)
-   - An **API scope** named `access_as_user` under "Expose an API" (`api://<client-id>/access_as_user`)
-   - Optional **App roles** defined for role-based access control (e.g., `Dataviewer.Viewer`, `Dataviewer.Annotator`, `Dataviewer.Admin`)
+   - Single-page application redirect URI set to the exact bridge URL: `http://localhost:5173/redirect.html` for local development, or `https://<frontend-host>/redirect.html` for production
+   - API scope named `access_as_user` under "Expose an API" (`api://<client-id>/access_as_user`)
+   - Optional app roles for role-based access control (e.g., `Dataviewer.Viewer`, `Dataviewer.Annotator`, `Dataviewer.Admin`)
 
 2. Note the **Application (client) ID** and **Directory (tenant) ID** from the app registration.
+
+The [Terraform module](../../infrastructure/terraform/modules/dataviewer/variables.tf) defaults to bridge URIs on local ports 5173 and 5174. Supply `dataviewer_redirect_uris` explicitly for production origins or different development ports; caller-supplied lists are used unchanged. The Easy Auth web callback `https://<frontend-host>/.auth/login/aad/callback` is separate from the MSAL SPA redirect and must remain registered as a web callback.
 
 ### Backend Configuration
 
@@ -348,7 +440,15 @@ VITE_AZURE_CLIENT_ID=<your-client-id>
 VITE_AZURE_TENANT_ID=<your-tenant-id>
 ```
 
-When `VITE_AZURE_CLIENT_ID` is set, the app wraps in an `MsalProvider` and attaches Bearer tokens to all API requests. When unset, MSAL is not initialized and the app runs without authentication (suitable for VPN-only access).
+When `VITE_AZURE_CLIENT_ID` is set, the app wraps in an `MsalProvider` and attaches bearer tokens to API fetches. When unset, MSAL is not initialized and the app runs without authentication (suitable for VPN-only access).
+
+Native images and videos cannot attach authorization headers. [`MediaAuthGate`](frontend/src/components/auth/MediaAuthGate.tsx) obtains a media cookie before mounting the authenticated workspace using the JWT- and CSRF-protected `POST /api/auth/media-session` endpoint. The gate renews at half the returned lifetime and displays an error on failure.
+
+The backend sets a host-only `__Secure-dataviewer-media` cookie with `HttpOnly`, `Secure`, `SameSite=Strict`, and path `/api/datasets/`. Its browser lifetime is at most five minutes and never exceeds the JWT's remaining lifetime. Cookie authentication is restricted to exact read-only frame and video routes, including range requests.
+
+Signature, issuer, audience, and expiration checks still apply; an invalid authorization header never falls back to a cookie. Dataset metadata, annotations, and mutations require ordinary authentication headers. Tokens are never placed in media URLs. Serve the frontend and API on the same HTTPS origin; Easy Auth continues to use its platform session.
+
+Deploy the backend endpoint before the frontend gate. For acceptance, inspect a native `<video>` or `<img>` request with no authorization header, verify playback or image decoding, and confirm cookie-only general API access returns 401.
 
 ### Docker Compose with Auth
 
@@ -360,6 +460,39 @@ docker compose up --build
 ```
 
 The frontend Dockerfile passes `VITE_AZURE_CLIENT_ID` and `VITE_AZURE_TENANT_ID` as build arguments. The backend receives `DATAVIEWER_AUTH_DISABLED` as a runtime environment variable.
+
+Supply the backend provider, tenant and client variables through container deployment environment settings as well; the Compose file forwards only the auth-disabled switch. Verify the effective environment with `docker compose config` before enabling authentication.
+
+### Redirect Bridge and Deployment
+
+MSAL v5 uses the standalone [redirect bridge](frontend/src/redirect.ts) for interactive redirects and silent iframe responses, independently of cross-origin isolation headers. Vite builds both `index.html` and `redirect.html`; the Docker image copies both documents and their bundled external modules. Token acquisition failures other than interaction-required errors reject API callers rather than sending requests without authentication headers.
+
+The production [NGINX policy](frontend/nginx.conf.template) permits same-origin framing only on `/redirect.html`, with `frame-ancestors 'self'`, `X-Frame-Options: SAMEORIGIN`, and `Cache-Control: no-store`. Root, SPA, static, health and API responses retain framing denial. Keep bridge scripts on the same origin; do not add inline-script allowances or COOP/COEP/CORP headers. Vite development serves the bridge but does not enforce the production NGINX policy.
+
+1. Add each exact `/redirect.html` URI to the Entra SPA registration before deploying an auth-enabled build. Retain the root SPA registration during the rollback window, and keep the Easy Auth web callback unchanged.
+2. Deploy the frontend image with the intended client/tenant build variables, verify the bridge and headers, then complete live authentication acceptance below.
+3. For rollback, restore the previous image and its matching configuration/registration. Do not loosen normal-page framing headers. Remove root SPA entries only after the rollback window closes.
+
+### Authentication Smoke Tests
+
+With an auth-disabled production Compose build running, execute from the repository root:
+
+```bash
+./scripts/security/Test-DataviewerSecurityHeaders.ps1
+npm run test:auth --workspace robotic-training-data-tool
+```
+
+The verifier checks independent policy literals, rejecting weakened or duplicate headers. The browser suite uses the pinned SDK and built bridge without credentials: synthetic `login_required` must reach the caller as `InteractionRequiredAuthError`; blocked framing or a missing bridge must time out. It also checks cross-origin denial and visible, sanitized errors for malformed/missing responses.
+
+These tests prove response delivery, not successful Entra authentication. Direct navigation to `/redirect.html` without an auth response must show an error.
+
+| Runtime                       | Acceptance                                                                                                                                                                                                  |
+|-------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Auth disabled                 | Build without `VITE_AZURE_CLIENT_ID`, run the backend with `DATAVIEWER_AUTH_DISABLED=true`, and verify normal dataset/API access without login. The bridge still exists for deterministic production tests  |
+| Auth-enabled Vite development | Register the exact origin/port bridge URI, configure both frontend and backend auth, and verify sign-in and authorized API access. Use the production container for framing/header evidence                 |
+| Auth-enabled production       | Register the HTTPS bridge URI, verify proxy headers and bridge asset delivery, then verify real sign-in, API access, silent renewal and the forced iframe fallback under the target tenant/browser policies |
+
+Cached access tokens and successful refresh-token exchanges can bypass the iframe. In a controlled live test, use the pinned SDK's `CacheLookupPolicy.Skip` to force that path and verify its result or interactive recovery; never log codes, tokens or response hashes. Treat tenant consent, browser cookies, issued-token validation and refresh behavior as deployment acceptance, not outcomes of the synthetic suite.
 
 ### Auth Environment Variable Reference
 
@@ -426,7 +559,7 @@ Available options:
 ```bash
 cd backend
 source .venv/bin/activate
-uvicorn src.api.main:app --reload --port 8000
+uvicorn src.api.main:app --log-config logging.json --log-level "${LOG_LEVEL:-info}" --reload --port 8000
 ```
 
 #### Start Frontend
@@ -477,6 +610,8 @@ Each episode can carry a structured `LanguageInstructionAnnotation` for vision-l
 
 When a dataset task description is available, the widget seeds the instruction with `source = template` via the "Use as Instruction" button. Otherwise, "Add Instruction" creates a blank instruction with `source = human`. The source can be changed at any time through the dropdown.
 
+A LeRobot export can include the saved instruction as LeRobot `task_aug` and `plan` rows; see [Exporting edited episodes](#exporting-edited-episodes).
+
 ### Episode Analyzer
 
 The **Episode Analyzer** tab combines trajectory metrics, VLM judgments, persisted analysis, episode labels, and language instructions. The run panels and persisted record have distinct storage behavior.
@@ -510,6 +645,65 @@ The **Log-scaled** mode compresses the jerk range with `log10` and is the defaul
 The label panel shows import buttons only for analysis fields present in the dataset. Enter an optional label prefix before importing. Enable **Replace existing imported labels** to remove stale labels in the same prefix namespace before applying current values. Unsaved label edits remain in the browser while the server response is reconciled.
 
 Supported fields include object, pickup location, grasp outcome, place outcome, motion score, motion flags, and source. Free-text movement notes and instructions remain analysis data because importing them would create unbounded label sets.
+
+### Exporting edited episodes
+
+**Export** writes the current episode with its edits applied: removed and inserted frames, crop and resize, trajectory adjustments and subtasks. The source dataset is never modified, and the output path must be under the Dataviewer data directory.
+
+| Source format | Export output                                                                                            |
+|---------------|----------------------------------------------------------------------------------------------------------|
+| LeRobot v3.0  | A new LeRobot v3.0 dataset at the output path, which must be new or empty and outside the source dataset |
+| HDF5          | `episode_<index>.hdf5` files in the output directory, with `.meta.json` and `.subtasks.json` beside them |
+
+LeRobot export supports datasets whose camera features are non-depth videos. It refuses a dataset with image features or depth video.
+
+A LeRobot export locks its output directory with a hidden `.dataviewer-export.lock` file and stages the dataset in a hidden `.dataviewer-export.partial` directory inside it, so an existing empty directory, such as a mounted volume, is kept. The dataset appears once the export completes, with `meta` moved in last. While the lock is held, a second export to the same directory fails.
+
+If the backend stops partway through an export, or an export fails and can't remove what it moved, the next export to that directory cleans up first.
+Before moving anything into place, every export records the identity of each file it staged. The cleanup removes the earlier export's staging and the moved files that still match that record, and it keeps a dataset whose move finished. Anything else in the directory stays, including files added inside the earlier export's folders, and exports there fail until you remove it.
+The cleanup opens each folder without following links and checks it against the record, and it ignores a record whose paths don't describe a staged dataset, so it can't remove anything outside the output directory.
+On Windows, which lacks the file operations that make this safe, the next export leaves the earlier export's files in place and fails until you remove them, including the hidden `.dataviewer-export.partial` directory.
+
+LeRobot exports need a filesystem that supports file locking, such as a local disk or a Docker bind mount. On one that doesn't, the export fails and can leave an empty `.dataviewer-export.lock` behind. The export dialog reports every failure as "Export failed", and the backend log gives the reason.
+
+A LeRobot export:
+
+- keeps every supported recorded feature;
+- re-encodes the videos with the source's recorded encoder settings, falling back to LeRobot's defaults for any setting the source doesn't record;
+- recomputes the per-episode and dataset statistics;
+- writes `meta/info.json` for its own files, without the `total_chunks` and `total_videos` counts a LeRobot v2.1 conversion can leave behind;
+- writes subtasks as LeRobot `subtask` annotations;
+- can add saved language instructions as LeRobot `task_aug` and `plan` annotations.
+
+Removing or inserting frames renumbers `frame_index` and sets `timestamp` to `frame_index / fps`. `dataviewer-export.json` maps each output frame to its source frame and records the edits and remapped subtasks.
+
+A subtask that loses its first or last frames to the edits shrinks to the frames that remain, and one with no frames left is dropped.
+
+In a LeRobot export, each subtask becomes a row in the `language_persistent` column, with the subtask label as its text and its first frame's `timestamp`. LeRobot treats a subtask as active until the next one starts, so frames in a gap between two subtasks read as the earlier subtask; `dataviewer-export.json` keeps the exact ranges. The label becomes the annotation text, so name subtasks the way training should read them.
+
+Opening an exported dataset shows its subtasks in the subtask editor. LeRobot subtask rows run until the next one starts, as LeRobot reads them, and an HDF5 export's `.subtasks.json` keeps its exact ranges. When you export again, subtasks you left unchanged keep their recorded data, changed subtasks replace the recorded ones, and deleting every subtask removes them.
+In `dataviewer-export.json`, `subtasks` is `null` when the export kept the recorded subtasks and an empty list when it removed them. A saved draft of the episode takes precedence over the recorded subtasks.
+
+When the source already has LeRobot language annotations, the export keeps them and moves them with the edited frames, apart from rows your subtasks or language instructions replace. Clear **Include subtasks as LeRobot subtask annotations** to export without your subtask changes; recorded subtask rows stay.
+For an HDF5 source the same option reads **Include subtask metadata**, and clearing it still carries a recorded `.subtasks.json` forward to the export.
+A LeRobot export has language columns when its source has them or when an exported episode gets subtask or language-instruction rows, so clearing the subtask option alone doesn't leave them out.
+Both columns use the Arrow types LeRobot declares for them, with tool calls stored as JSON text.
+
+For a LeRobot source, **Include language instructions as LeRobot task phrasings and plan** adds each episode's most recently saved [language instruction](#language-instruction-vla-annotation):
+
+- the instruction and its paraphrases become `task_aug` rows, which LeRobot rotates `${task}` through during training;
+- the subtask instructions become one numbered `plan` row at the first frame.
+
+These rows replace the source's `task_aug` and `plan` rows for that episode, and episodes without a saved instruction keep theirs. The option is on by default in the dialog and in the export API, where `"includeLanguageInstructions": false` turns it off. `dataviewer-export.json` records whose instruction was used and when it was saved.
+
+The trajectory editor adjusts the recorded frame under the playhead. After you remove or insert frames, it says which recorded frame that is. An inserted frame takes its values from the recorded frames on either side, so the editor doesn't adjust it directly.
+
+Trajectory adjustments never replace recorded joint positions:
+
+- LeRobot exports add `adjusted.observation.state` and `adjusted.observation.state_mask` beside `observation.state`. The `adjusted.` prefix keeps them out of LeRobot policy inputs.
+- HDF5 exports add `data/qpos_adjusted` and `data/qpos_adjusted_mask` beside `data/qpos`.
+
+Each export is its own dataset. LeRobot merges datasets only when their features match, so a cropped or adjusted export doesn't merge with an unedited one.
 
 ### VLM dataset-labeling CLI
 
@@ -546,18 +740,48 @@ Without `--write-analysis`, the JSONL and CSV files remain standalone exports an
 ### Docker Compose (local)
 
 ```bash
-# Stage reviewed model weights outside the repository.
-export DATAVIEWER_HOST_MODELS_DIR=/absolute/path/to/models
-export DETECTION_MODEL_DIGESTS='{"yolo11n":"<sha256>","yolov8s-world":"<sha256>"}'
-
-# Local storage mode
+# Local storage mode without object detection: Docker Desktop for macOS or Windows
 DATAVIEWER_HOST_DATA_DIR=/path/to/datasets docker compose up --build
+
+# Rootful Docker Engine on Linux or directly inside WSL
+DATAVIEWER_UID="$(id -u)" \
+DATAVIEWER_GID="$(id -g)" \
+DATAVIEWER_HOST_DATA_DIR=/path/to/datasets \
+docker compose up --build
+
+# Rootless Docker only
+DATAVIEWER_UID=0 \
+DATAVIEWER_GID=0 \
+DATAVIEWER_HOST_DATA_DIR=/path/to/datasets \
+docker compose up --build
 
 # Azure Blob Storage mode
 export STORAGE_BACKEND=azure
 export AZURE_STORAGE_ACCOUNT_NAME=mystorageaccount
 export AZURE_STORAGE_DATASET_CONTAINER=datasets
 export AZURE_STORAGE_ANNOTATION_CONTAINER=annotations
+docker compose up --build
+```
+
+Local storage requires write access to `DATAVIEWER_HOST_DATA_DIR` because annotations and labels are persisted atomically under each dataset directory. The backend validates create, flush, replace, and delete operations during startup and exits with the effective UID and GID when the mount is not writable.
+
+| Environment                                           | Runtime identity                                                                             |
+|-------------------------------------------------------|----------------------------------------------------------------------------------------------|
+| Docker Desktop for macOS or Windows                   | Uses the image-defined UID/GID 999                                                           |
+| Rootful Docker Engine on Linux or directly inside WSL | Set `DATAVIEWER_UID` and `DATAVIEWER_GID` from `id -u` and `id -g`                           |
+| Rootless Docker                                       | Set `DATAVIEWER_UID=0` and `DATAVIEWER_GID=0`; rootless UID 0 maps to the invoking host user |
+| Docker daemon with user-namespace remapping           | Pre-arrange host directory ownership for the daemon's subordinate UID/GID mapping            |
+
+> [!WARNING]
+> Do not use the rootless UID/GID 0 override with a rootful Docker daemon. It runs the backend as host-capable container root.
+
+On SELinux-enforcing hosts, set `DATAVIEWER_DATA_MOUNT_OPTIONS=rw,z` for a dataset shared with other containers or `rw,Z` for a private mount. These options relabel the host directory; do not apply them to system paths or directories whose existing labels must remain unchanged.
+
+Object detection is optional. To enable it, stage reviewed model weights outside the repository before starting the services:
+
+```bash
+export DATAVIEWER_HOST_MODELS_DIR=/absolute/path/to/models
+export DETECTION_MODEL_DIGESTS='{"yolo11n":"<sha256>","yolov8s-world":"<sha256>"}'
 docker compose up --build
 ```
 
@@ -593,6 +817,7 @@ STORAGE_BACKEND=azure
 AZURE_STORAGE_ACCOUNT_NAME=mystorageaccount
 AZURE_STORAGE_DATASET_CONTAINER=datasets
 BACKEND_HOST=0.0.0.0
+LOG_LEVEL=info
 CORS_ORIGINS=https://your-frontend-url.example.com
 DETECTION_MODELS_DIR=/models
 DETECTION_MODEL_DIGESTS={"yolo11n":"<sha256>","yolov8s-world":"<sha256>"}
@@ -613,6 +838,8 @@ NGINX verifies the backend certificate and hostname against `/etc/ssl/certs/ca-c
 Mount the reviewed model directory read-only at `/models`. Update the mount and digest map together during rollout or rollback.
 
 ### Building Images
+
+The backend image includes the frozen `azure`, `analysis`, `export`, `auth`, and `yolo` extras. Its build stage installs dependencies; the runtime stage copies the virtual environment with the application user's ownership. Installation caches remain in the build stage.
 
 ```bash
 # Backend
@@ -660,6 +887,15 @@ npm run format       # Prettier check
 npm run format:fix   # Prettier auto-fix
 npm run build        # Production build
 ```
+
+## 🔍 Troubleshooting
+
+Error messages in the viewer leave out server details; the backend log has them.
+
+| Symptom                                                                                      | Cause and fix                                                                                                                                                                                                                                                   |
+|----------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| "Error loading episode: The episode's files couldn't be read; the backend log has the cause" | The dataset's loader couldn't read the episode's files, and the episode, detection, auto-analysis and export-preview endpoints return HTTP 500 with code `EPISODE_LOAD_FAILED`. Find the file and error in the backend log, then repair or replace the episode. |
+| An export reports "Export failed"                                                            | The backend log names the cause. Another export may be writing to the same directory, the output directory may not be new or empty, or its filesystem may not support file locking.                                                                             |
 
 ## 📖 API Documentation
 

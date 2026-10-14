@@ -9,6 +9,23 @@ name: Pytest Training
         required: false
         default: false
         type: boolean
+    outputs:
+      work-status:
+        value: ${{ jobs.pytest-training.outputs.work-status }}
+      expected-count:
+        value: ${{ jobs.pytest-training.outputs.expected-count }}
+      executed-count:
+        value: ${{ jobs.pytest-training.outputs.executed-count }}
+      artifact-id:
+        value: ${{ jobs.pytest-training.outputs.artifact-id }}
+      artifact-url:
+        value: ${{ jobs.pytest-training.outputs.artifact-url }}
+      test-count:
+        value: ${{ jobs.pytest-training.outputs.test-count }}
+      skipped-count:
+        value: ${{ jobs.pytest-training.outputs.skipped-count }}
+      first-failure:
+        value: ${{ jobs.pytest-training.outputs.first-failure }}
 
 permissions:
   contents: read
@@ -17,6 +34,16 @@ jobs:
   pytest-training:
     name: Pytest Training
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      work-status: ${{ steps.outcome.outputs.work-status }}
+      expected-count: ${{ steps.outcome.outputs.expected-count }}
+      executed-count: ${{ steps.outcome.outputs.executed-count }}
+      artifact-id: ${{ steps.outcome.outputs.artifact-id }}
+      artifact-url: ${{ steps.outcome.outputs.artifact-url }}
+      test-count: ${{ steps.outcome.outputs.test-count }}
+      skipped-count: ${{ steps.outcome.outputs.skipped-count }}
+      first-failure: ${{ steps.outcome.outputs.first-failure }}
     permissions:
       contents: read
       id-token: write
@@ -32,14 +59,20 @@ jobs:
           python-version: '3.12'
 
       - name: Setup uv
-        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4  # v10.1.0
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
+        with:
+          version: '0.12.20'
+          checksum: '6590717592ace991ff83a63fef799e3ad9d33ecc8f96c5d6bdd732496e79337f'
 
       - name: Install dependencies
-        run: uv sync --group dev
+        id: install
+        run: uv sync --frozen --group dev
 
       - name: Run pytest
+        id: test
         run: >-
-          uv run pytest -o addopts="" training/tests -v
+          uv run --frozen pytest -o addopts="" training/tests -v
+          --junitxml=logs/pytest-training-results.xml
           --cov=training
           --cov-report=term-missing
           --cov-report=xml:logs/coverage-training.xml
@@ -47,15 +80,17 @@ jobs:
 
       - name: Upload coverage.xml artifact
         if: always()
+        continue-on-error: ${{ job.status == 'failure' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
           name: pytest-training-coverage-xml
           path: logs/coverage-training.xml
+          if-no-files-found: error
           retention-days: 30
 
       - name: Upload coverage to Codecov
         if: ${{ inputs.code-coverage && always() }}
-        uses: codecov/codecov-action@0b35c9ecc4f0529d0eb674914510c22f85b196b4  # v7.1.0
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5  # v7.1.1
         with:
           files: logs/coverage-training.xml
           use_oidc: true
@@ -63,3 +98,13 @@ jobs:
           verbose: true
           flags: pytest-training
           name: pytest-training-coverage
+
+      - name: Publish execution evidence
+        id: outcome
+        if: always()
+        uses: ./.github/actions/ci-outcome
+        with:
+          workflow: pytest-training
+          steps-json: ${{ toJSON(steps) }}
+          required-steps: '["install","test"]'
+          reports: '[{"path":"logs/pytest-training-results.xml","kind":"junit"}]'

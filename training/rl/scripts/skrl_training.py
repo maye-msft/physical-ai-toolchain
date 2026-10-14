@@ -24,13 +24,16 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, NamedTuple
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 from training.rl.scripts.skrl_mlflow_agent import create_mlflow_logging_wrapper
 from training.rl.simulation_shutdown import prepare_for_shutdown
 from training.stream import install_ansi_stripping
-from training.utils import AzureMLContext, set_env_defaults
+from training.utils import set_env_defaults
 from training.utils.integrity import safe_load_skrl_checkpoint
+
+if TYPE_CHECKING:
+    from training.utils.context import AzureMLContext
 
 _LOGGER = logging.getLogger("isaaclab.skrl")
 
@@ -590,6 +593,11 @@ def mlflow_run_context(
     env_run_id = os.environ.get("MLFLOW_RUN_ID")
     env_experiment_name = os.environ.get("MLFLOW_EXPERIMENT_NAME")
     env_experiment_id = os.environ.get("MLFLOW_EXPERIMENT_ID")
+
+    if context is not None:
+        tracking_uri = context.tracking_uri
+        mlflow.set_tracking_uri(tracking_uri)
+        mlflow.set_registry_uri(tracking_uri)
 
     # Log all relevant MLflow environment variables for debugging
     mlflow_env_vars = {k: v for k, v in os.environ.items() if k.startswith(("MLFLOW_", "AZURE_"))}

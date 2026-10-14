@@ -1,0 +1,3081 @@
+{
+  "entries": [
+    {
+      "classification": "unresolved",
+      "count": 2,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/design",
+        "/security"
+      ],
+      "rule": "color-contrast",
+      "signature": "89102d99dc74bd09",
+      "state": "default",
+      "target": "[\"p:nth-child(5)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 2,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/design",
+        "/security"
+      ],
+      "rule": "color-contrast",
+      "signature": "e9afed9e2524b253",
+      "state": "default",
+      "target": "[\"p:nth-child(5)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Test writer compression<br>or reduce publisher rate</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "imgNode",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "032956fb1eaa6c1e",
+      "state": "default",
+      "target": "[\"#mermaid-svg-flowchart-D-5 > .label[transform=\\\"translate(-60, -58)\\\"] > foreignobject[height=\\\"116\\\"][width=\\\"120\\\"] > div > .nodeLabel > p\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\"> ┌────────────────────────┐</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "03601f025ac24da1",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(21) > .plain.token\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Each tier carries a stable ID (<code>T0</code>–<code>T5</code>) and a stage name. The two are paired everywhere:</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/design"
+      ],
+      "rule": "color-contrast",
+      "signature": "0ac1039eda8bff8a",
+      "state": "default",
+      "target": "[\"p:nth-child(6)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<h1 class=\"heroTitle\" id=\"_R_\">Physical AI Toolchain</h1>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "bgImage",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/"
+      ],
+      "rule": "color-contrast",
+      "signature": "0cd96a54f7c181f1",
+      "state": "default",
+      "target": "[\"#_R_\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td><code>02-deploy-azureml-extension.sh</code> → <code>--release-train stable</code></td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/contributing"
+      ],
+      "rule": "color-contrast",
+      "signature": "0d3300df1208395e",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"component-inventory\\\"] > tbody > tr:nth-child(5) > td:nth-child(3)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<code>training/il/scripts/submit-azureml-lerobot-pipeline.sh</code>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscured",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-01",
+      "routeFamilies": [
+        "/reference"
+      ],
+      "rule": "color-contrast",
+      "signature": "0d61dbb2c2015c93",
+      "state": "default",
+      "target": "[\"tr:nth-child(6) > td:nth-child(4) > code\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\">│ ┌──────────────┐ │ │</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "0df24b0a17df9703",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(13) > .plain.token\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Each tier carries a stable ID (<code>T0</code>–<code>T5</code>) and a stage name. The two are paired everywhere:</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/design"
+      ],
+      "rule": "color-contrast",
+      "signature": "0e1531b2f0e80c94",
+      "state": "default",
+      "target": "[\"p:nth-child(6)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\">│ └──────────────┘ │ │</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "0f90a665a90c2510",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(17) > .plain.token\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Scripts automatically install required Azure CLI extensions (<code>k8s-extension</code>, <code>ml</code>) if missing.</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/infrastructure"
+      ],
+      "rule": "color-contrast",
+      "signature": "12efb245b316d0af",
+      "state": "default",
+      "target": "[\".markdown-alert-note.markdown-alert[dir=\\\"auto\\\"]:nth-child(6) > p:nth-child(2)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p class=\"heroSubtitle\">Production-ready framework for training, deploying, and operating physical AI solutions on Azure with NVIDIA Isaac.</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "bgImage",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/"
+      ],
+      "rule": "color-contrast",
+      "signature": "17baf1a7b17336bf",
+      "state": "default",
+      "target": "[\".heroSubtitle\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>One site, a few robots, optionally a shared GPU box. Local GPU still optional.</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/recipes"
+      ],
+      "rule": "color-contrast",
+      "signature": "180a79cdbcab36da",
+      "state": "default",
+      "target": "[\"tr:nth-child(1) > td:nth-child(2)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Test split sizes against<br>the upload workflow</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "imgNode",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "1b1e22e6ae43957a",
+      "state": "default",
+      "target": "[\"#mermaid-svg-flowchart-I-15 > .label[transform=\\\"translate(-60, -58)\\\"] > foreignobject[height=\\\"116\\\"][width=\\\"120\\\"] > div > .nodeLabel > p\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\"> └────────────────────────┘</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "1b8536b087463cd4",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(24) > .plain.token\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>osmo_proxy.py<br>(AML command job, runs inside AKS pod)</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/osmo-proxy"
+      ],
+      "rule": "color-contrast",
+      "signature": "1fe5d80dc2672f2b",
+      "state": "default",
+      "target": "[\"#mermaid-svg-flowchart-B-1 > .label[transform=\\\"translate(-60, -58)\\\"] > foreignobject[height=\\\"116\\\"][width=\\\"120\\\"] > div > .nodeLabel > p\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>Current <code>osmo_loadbalancer_ip</code> and any DNS variable overrides</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/infrastructure"
+      ],
+      "rule": "color-contrast",
+      "signature": "203a85803f6465d9",
+      "state": "default",
+      "target": "[\"tr:nth-child(3) > td:nth-child(3)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\"> └────────────────────────┘</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "22bad960d6fe6b48",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(24) > .plain.token\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\">│ │ └─────────┬─────────┘ │</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "24ade38ebdc0e201",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(11) > .plain.token\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Developer / CI pipeline</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "imgNode",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/osmo-proxy"
+      ],
+      "rule": "color-contrast",
+      "signature": "25ded03d2d2ccdba",
+      "state": "default",
+      "target": "[\"foreignobject[height=\\\"68\\\"][width=\\\"120\\\"] > div > .nodeLabel > p\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>New Terraform variable, changed Helm value, updated script flag</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/contributing"
+      ],
+      "rule": "color-contrast",
+      "signature": "26879f810cab5c2f",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"update-triggers\\\"] > tbody > tr:nth-child(1) > td:nth-child(2)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<li><code>task: \"\"</code> → <code>task: auto</code></li>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/evaluation"
+      ],
+      "rule": "color-contrast",
+      "signature": "26deff1555ad3255",
+      "state": "default",
+      "target": "[\"ul:nth-child(33) > li:nth-child(1)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\"> │ │ │</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/recipes"
+      ],
+      "rule": "color-contrast",
+      "signature": "275f03043c1c8b7d",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(2) > .plain.token\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p class=\"heroSubtitle\">Production-ready framework for training, deploying, and operating physical AI solutions on Azure with NVIDIA Isaac.</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "bgImage",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/"
+      ],
+      "rule": "color-contrast",
+      "signature": "289bb0a80b7ca96c",
+      "state": "default",
+      "target": "[\".heroSubtitle\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>AML Studio</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "imgNode",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/osmo-proxy"
+      ],
+      "rule": "color-contrast",
+      "signature": "2aac6eb9b944e2ec",
+      "state": "default",
+      "target": "[\"foreignobject[height=\\\"44\\\"][width=\\\"120\\\"] > div > .nodeLabel > p\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>Local K3s or Ubuntu mutation</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/recipes"
+      ],
+      "rule": "color-contrast",
+      "signature": "2accd2b059012aa1",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"responsibilities\\\"] > tbody > tr:nth-child(1) > td:nth-child(3)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td style=\"text-align:center\">✓</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/infrastructure"
+      ],
+      "rule": "color-contrast",
+      "signature": "2cbc667fca5a8f0a",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"scenario-comparison\\\"] > tbody > tr:nth-child(3) > td:nth-child(3)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Recording problem detected</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "imgNode",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "2eb3188d289b1ac5",
+      "state": "default",
+      "target": "[\"foreignobject[height=\\\"92\\\"] > div > .nodeLabel > p\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Do not treat bag splitting<br>as a flush control</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "imgNode",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "2ede74e7896ac087",
+      "state": "default",
+      "target": "[\"#mermaid-svg-flowchart-G-11 > .label[transform=\\\"translate(-60, -58)\\\"] > foreignobject[height=\\\"116\\\"][width=\\\"120\\\"] > div > .nodeLabel > p\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<code>submit-azureml-lerobot-training.sh</code>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/reference"
+      ],
+      "rule": "color-contrast",
+      "signature": "300360bb59e4040d",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"submission-scripts\\\"] > tbody > tr:nth-child(3) > td:nth-child(1) > code\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\">│ ┌──────────────┐ ┌───────────────────┐ │</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "302d5d6d447ba66c",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(4) > .plain.token\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\"> │ │ │</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/recipes"
+      ],
+      "rule": "color-contrast",
+      "signature": "317f4b857a17be16",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(2) > .plain.token\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td><code>infrastructure/setup/defaults.conf</code> → <code>OSMO_CHART_VERSION</code></td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/contributing"
+      ],
+      "rule": "color-contrast",
+      "signature": "3784e4957d61d1bf",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"component-inventory\\\"] > tbody > tr:nth-child(3) > td:nth-child(3)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>Point-to-site and site-to-site VPN for private cluster access</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/infrastructure"
+      ],
+      "rule": "color-contrast",
+      "signature": "37c572b0c926ebb8",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"-deployment-guides\\\"] > tbody > tr:nth-child(4) > td:nth-child(2)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>Binds backend, pool, local node, K3s target, and OSMO profile</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/evaluation"
+      ],
+      "rule": "color-contrast",
+      "signature": "404b7a4d8b8392b2",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"prerequisites\\\"] > tbody > tr:nth-child(4) > td:nth-child(2)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>OSMO<br>(KAI scheduling, NIM lifecycle)</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "imgNode",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/osmo-proxy"
+      ],
+      "rule": "color-contrast",
+      "signature": "43ffeaedd9fcd202",
+      "state": "default",
+      "target": "[\"#mermaid-svg-flowchart-C-3 > .label[transform=\\\"translate(-60, -58)\\\"] > foreignobject[height=\\\"116\\\"][width=\\\"120\\\"] > div > .nodeLabel > p\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<code>evaluation/sil/scripts/submit-azureml-lerobot-eval.sh</code>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscured",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-01",
+      "routeFamilies": [
+        "/reference"
+      ],
+      "rule": "color-contrast",
+      "signature": "443eae474be21887",
+      "state": "default",
+      "target": "[\"tr:nth-child(5) > td:nth-child(4) > code\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<li><code>framework: \"\"</code> → <code>framework: auto</code></li>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/evaluation"
+      ],
+      "rule": "color-contrast",
+      "signature": "450c73dea1389c8a",
+      "state": "default",
+      "target": "[\"ul:nth-child(33) > li:nth-child(2)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\">│ │ │ │ │ │</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "48747cccb2b5a463",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(7) > .plain.token\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Measure sustained disk throughput<br>and cache behavior</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "4db6e139f58a3d99",
+      "state": "default",
+      "target": "[\"foreignobject[height=\\\"140\\\"] > div > .nodeLabel > p\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\">│ │ │ │ │ │</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "50b783ec1ed0fdf4",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(7) > .plain.token\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Measure sustained disk throughput<br>and cache behavior</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "557ff34b0c6a57b9",
+      "state": "default",
+      "target": "[\"foreignobject[height=\\\"140\\\"] > div > .nodeLabel > p\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Do not treat bag splitting<br>as a flush control</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "imgNode",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "5593815ff3fd48df",
+      "state": "default",
+      "target": "[\"#mermaid-svg-flowchart-G-11 > .label[transform=\\\"translate(-60, -58)\\\"] > foreignobject[height=\\\"116\\\"][width=\\\"120\\\"] > div > .nodeLabel > p\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>GitHub Actions permission scopes and OSSF Scorecard exceptions</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/security"
+      ],
+      "rule": "color-contrast",
+      "signature": "564c5751dec79d4d",
+      "state": "default",
+      "target": "[\".tableWrapper[role=\\\"group\\\"][aria-labelledby=\\\"-documents\\\"] > table > tbody > tr:nth-child(4) > td:nth-child(2)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>Environment owner</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/recipes"
+      ],
+      "rule": "color-contrast",
+      "signature": "59c11c2be2b3530a",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"responsibilities\\\"] > tbody > tr:nth-child(1) > td:nth-child(1)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td><code>infrastructure/setup/defaults.conf</code> → <code>OSMO_IMAGE_VERSION</code></td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/contributing"
+      ],
+      "rule": "color-contrast",
+      "signature": "59c6692683ec0f77",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"component-inventory\\\"] > tbody > tr:nth-child(4) > td:nth-child(3)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>No local GPU; the task needs many training iterations as conditions vary; or a second person needs the data.</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/getting-started"
+      ],
+      "rule": "color-contrast",
+      "signature": "5da9356493809991",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"-choose-your-tier\\\"] > tbody > tr:nth-child(1) > td:nth-child(3)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>Verify the existing OSMO endpoint, backend, pool, charts, images, registry access, Key Vault secrets, per-secret roles, Arc workload identity, and coherent publication</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/recipes"
+      ],
+      "rule": "color-contrast",
+      "signature": "5e9f9d0c5e027d79",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"responsibilities\\\"] > tbody > tr:nth-child(1) > td:nth-child(2)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>Local K3s or Ubuntu mutation</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/recipes"
+      ],
+      "rule": "color-contrast",
+      "signature": "5ee6d0113a869cc2",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"responsibilities\\\"] > tbody > tr:nth-child(1) > td:nth-child(3)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>New Terraform variable, changed Helm value, updated script flag</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/contributing"
+      ],
+      "rule": "color-contrast",
+      "signature": "5f30db83db386a4f",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"update-triggers\\\"] > tbody > tr:nth-child(1) > td:nth-child(2)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td><code>infrastructure/setup/defaults.conf</code> → <code>KAI_SCHEDULER_VERSION</code></td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/contributing"
+      ],
+      "rule": "color-contrast",
+      "signature": "6092c619c4daf853",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"component-inventory\\\"] > tbody > tr:nth-child(2) > td:nth-child(3)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Recording problem detected</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "imgNode",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "64634b302dd9449c",
+      "state": "default",
+      "target": "[\"foreignobject[height=\\\"92\\\"] > div > .nodeLabel > p\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/recipes"
+      ],
+      "rule": "color-contrast",
+      "signature": "64a7229657ec8d3c",
+      "state": "default",
+      "target": "[\".markdown-alert.markdown-alert-warning[dir=\\\"auto\\\"]:nth-child(4) > p:nth-child(2)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\">│ ▼ │ │</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "66a7b46300376be0",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(12) > .plain.token\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td style=\"text-align:center\">✓</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/infrastructure"
+      ],
+      "rule": "color-contrast",
+      "signature": "68c3410148fb58ff",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"scenario-comparison\\\"] > tbody > tr:nth-child(3) > td:nth-child(3)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Transfer completed files</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "imgNode",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "697ddafc7479b8b8",
+      "state": "default",
+      "target": "[\"#mermaid-svg-flowchart-H-13 > .label[transform=\\\"translate(-60, -34)\\\"] > foreignobject[height=\\\"68\\\"][width=\\\"120\\\"] > div > .nodeLabel > p\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Measure bag rate</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "imgNode",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "6997bbeb8a0e4ad8",
+      "state": "default",
+      "target": "[\"#mermaid-svg-flowchart-C-3 > .label[transform=\\\"translate(-60, -34)\\\"] > foreignobject[height=\\\"68\\\"][width=\\\"120\\\"] > div > .nodeLabel > p\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>Environment owner</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/recipes"
+      ],
+      "rule": "color-contrast",
+      "signature": "6a6e3f7683859990",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"responsibilities\\\"] > tbody > tr:nth-child(1) > td:nth-child(1)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>No local GPU; the task needs many training iterations as conditions vary; or a second person needs the data.</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/getting-started"
+      ],
+      "rule": "color-contrast",
+      "signature": "6cc26651a68243c9",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"-choose-your-tier\\\"] > tbody > tr:nth-child(1) > td:nth-child(3)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>Default. One laptop, one robot; zero cloud and no required Kubernetes.</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/getting-started"
+      ],
+      "rule": "color-contrast",
+      "signature": "6cc513427978113c",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"-choose-your-tier\\\"] > tbody > tr:nth-child(1) > td:nth-child(2)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\">│</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/infrastructure"
+      ],
+      "rule": "color-contrast",
+      "signature": "6dd8dacecc37066f",
+      "state": "default",
+      "target": "[\".language-text.codeBlockContainer.theme-code-block:nth-child(8) > .codeBlockContent > .language-text > .codeBlockLines > .token-line:nth-child(9) > .plain.token\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Primary observation?</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "imgNode",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "714df65a3edd222e",
+      "state": "default",
+      "target": "[\"#mermaid-svg-flowchart-B-1 > .label[transform=\\\"translate(-60, -34)\\\"] > foreignobject[height=\\\"68\\\"][width=\\\"120\\\"] > div > .nodeLabel > p\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\">┌─────────────────────────────────────────────┐</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "75c52593fc55a871",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(1) > .plain.token\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<li><code>task: \"\"</code> → <code>task: auto</code></li>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/evaluation"
+      ],
+      "rule": "color-contrast",
+      "signature": "77eb02539dee4a58",
+      "state": "default",
+      "target": "[\"ul:nth-child(33) > li:nth-child(1)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>osmo_proxy.py<br>(AML command job, runs inside AKS pod)</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/osmo-proxy"
+      ],
+      "rule": "color-contrast",
+      "signature": "78642457b050deba",
+      "state": "default",
+      "target": "[\"#mermaid-svg-flowchart-B-1 > .label[transform=\\\"translate(-60, -58)\\\"] > foreignobject[height=\\\"116\\\"][width=\\\"120\\\"] > div > .nodeLabel > p\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<code>training/smoke/scripts/submit-azureml-gpu-smoke.sh</code>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscured",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-01",
+      "routeFamilies": [
+        "/reference"
+      ],
+      "rule": "color-contrast",
+      "signature": "78a8adc402826190",
+      "state": "default",
+      "target": "[\"tr:nth-child(2) > td:nth-child(4) > code\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<code>training/rl/scripts/submit-azureml-training.sh</code>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscured",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/reference"
+      ],
+      "rule": "color-contrast",
+      "signature": "7c6d49e3459b533d",
+      "state": "default",
+      "target": "[\"tr:nth-child(1) > td:nth-child(4) > code\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td><code>infrastructure/setup/defaults.conf</code> → <code>KAI_SCHEDULER_VERSION</code></td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/contributing"
+      ],
+      "rule": "color-contrast",
+      "signature": "7d7688896b51e3dd",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"component-inventory\\\"] > tbody > tr:nth-child(2) > td:nth-child(3)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/contributing"
+      ],
+      "rule": "color-contrast",
+      "signature": "7f5631eff8356674",
+      "state": "default",
+      "target": "[\".theme-doc-markdown > p:nth-child(7)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\">┌─────────────────────────────────────────────┐</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "80bf7709c02e513f",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(1) > .plain.token\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>Default. One laptop, one robot; zero cloud and no required Kubernetes.</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/getting-started"
+      ],
+      "rule": "color-contrast",
+      "signature": "815e6705188292ba",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"-choose-your-tier\\\"] > tbody > tr:nth-child(1) > td:nth-child(2)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\">│ │ └─────────┬─────────┘ │</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "83217f8e4ad4774c",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(11) > .plain.token\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<th scope=\"col\">Typical submit path</th>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscured",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/reference"
+      ],
+      "rule": "color-contrast",
+      "signature": "845ace7dfda9b633",
+      "state": "default",
+      "target": "[\"th:nth-child(4)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<code>evaluation/sil/scripts/submit-azureml-isaaclab-evaluation.sh</code>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscured",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-01",
+      "routeFamilies": [
+        "/reference"
+      ],
+      "rule": "color-contrast",
+      "signature": "8b1762919b62726e",
+      "state": "default",
+      "target": "[\"tr:nth-child(4) > td:nth-child(4) > code\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td><code>02-deploy-azureml-extension.sh</code> → <code>--release-train stable</code></td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/contributing"
+      ],
+      "rule": "color-contrast",
+      "signature": "8cf04447f4d0885d",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"component-inventory\\\"] > tbody > tr:nth-child(5) > td:nth-child(3)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>After successfully training an Isaac Lab policy using <code>osmorobo-submit.sh</code>, the user attempted to evaluate the trained policy using <code>osmorobo-validate.sh</code>. The evaluation scri [truncated]",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/evaluation"
+      ],
+      "rule": "color-contrast",
+      "signature": "9269d266f9d015d1",
+      "state": "default",
+      "target": "[\"p:nth-child(7)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<code>submit-azureml-lerobot-training.sh</code>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/reference"
+      ],
+      "rule": "color-contrast",
+      "signature": "94f29102e127896a",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"submission-scripts\\\"] > tbody > tr:nth-child(3) > td:nth-child(1) > code\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\"> ┌────────────────────────┐</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "9556dc459b22a53f",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(21) > .plain.token\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>Required only for private HuggingFace datasets (<code>hf_token</code> credential); Azure Blob and Data Asset sources use managed identity</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/training"
+      ],
+      "rule": "color-contrast",
+      "signature": "95e08969ab07226e",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"-prerequisites\\\"] > tbody > tr:nth-child(4) > td:nth-child(2)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td style=\"text-align:center\">✗</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/infrastructure"
+      ],
+      "rule": "color-contrast",
+      "signature": "9a1cd82b0f2aba2b",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"scenario-comparison\\\"] > tbody > tr:nth-child(3) > td:nth-child(2)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\"> ▼</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "9aac72c9b10673c9",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(20) > .plain.token\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>Point-to-site and site-to-site VPN for private cluster access</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/infrastructure"
+      ],
+      "rule": "color-contrast",
+      "signature": "9cf1bd57ab1f1a3c",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"-deployment-guides\\\"] > tbody > tr:nth-child(4) > td:nth-child(2)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>After successfully training an Isaac Lab policy using <code>osmorobo-submit.sh</code>, the user attempted to evaluate the trained policy using <code>osmorobo-validate.sh</code>. The evaluation scri [truncated]",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/evaluation"
+      ],
+      "rule": "color-contrast",
+      "signature": "a43ef30c1b41e4c8",
+      "state": "default",
+      "target": "[\"p:nth-child(7)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>AML Studio</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "imgNode",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/osmo-proxy"
+      ],
+      "rule": "color-contrast",
+      "signature": "a5910357f20964de",
+      "state": "default",
+      "target": "[\"foreignobject[height=\\\"44\\\"][width=\\\"120\\\"] > div > .nodeLabel > p\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>API, CLI, or configuration schema changes</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/contributing"
+      ],
+      "rule": "color-contrast",
+      "signature": "a630bdc0dd80a357",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"update-triggers\\\"] > tbody > tr:nth-child(1) > td:nth-child(1)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\">│ │</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "a93db1dbe2644654",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(3) > .plain.token\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Scripts automatically install required Azure CLI extensions (<code>k8s-extension</code>, <code>ml</code>) if missing.</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/infrastructure"
+      ],
+      "rule": "color-contrast",
+      "signature": "aa11d05891caf644",
+      "state": "default",
+      "target": "[\".markdown-alert-note.markdown-alert[dir=\\\"auto\\\"]:nth-child(6) > p:nth-child(2)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>TypeScript property tests</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/contributing"
+      ],
+      "rule": "color-contrast",
+      "signature": "aac153522dc7ef8e",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"architecture\\\"] > tbody > tr:nth-child(3) > td:nth-child(1)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\">│ └──────────────┘ │ │</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "aea6b4bc5fcdb3ec",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(17) > .plain.token\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>GitHub Actions permission scopes and OSSF Scorecard exceptions</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/security"
+      ],
+      "rule": "color-contrast",
+      "signature": "b9e90ad270932eb2",
+      "state": "default",
+      "target": "[\".tableWrapper[role=\\\"group\\\"][aria-labelledby=\\\"-documents\\\"] > table > tbody > tr:nth-child(4) > td:nth-child(2)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>Pure utility functions in the dataviewer frontend</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/contributing"
+      ],
+      "rule": "color-contrast",
+      "signature": "ba10fd3c39e161ba",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"architecture\\\"] > tbody > tr:nth-child(3) > td:nth-child(3)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td><code>infrastructure/setup/defaults.conf</code> → <code>OSMO_IMAGE_VERSION</code></td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/contributing"
+      ],
+      "rule": "color-contrast",
+      "signature": "bb1649b2a43b205c",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"component-inventory\\\"] > tbody > tr:nth-child(4) > td:nth-child(3)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Transfer completed files</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "imgNode",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "bcd4875f0b0e04ce",
+      "state": "default",
+      "target": "[\"#mermaid-svg-flowchart-H-13 > .label[transform=\\\"translate(-60, -34)\\\"] > foreignobject[height=\\\"68\\\"][width=\\\"120\\\"] > div > .nodeLabel > p\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>Binds backend, pool, local node, K3s target, and OSMO profile</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/evaluation"
+      ],
+      "rule": "color-contrast",
+      "signature": "be46ae624ec6532e",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"prerequisites\\\"] > tbody > tr:nth-child(4) > td:nth-child(2)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\">└────────────────────────────────┼────────────┘</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "c0b96d117206570b",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(18) > .plain.token\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>Verify the existing OSMO endpoint, backend, pool, charts, images, registry access, Key Vault secrets, per-secret roles, Arc workload identity, and coherent publication</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/recipes"
+      ],
+      "rule": "color-contrast",
+      "signature": "c0c250fbc23c2540",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"responsibilities\\\"] > tbody > tr:nth-child(1) > td:nth-child(2)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<code>training/il/scripts/submit-azureml-lerobot-training.sh</code>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscured",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-01",
+      "routeFamilies": [
+        "/reference"
+      ],
+      "rule": "color-contrast",
+      "signature": "c2a6e33b95e0e8d7",
+      "state": "default",
+      "target": "[\"tr:nth-child(3) > td:nth-child(4) > code\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\">│ ┌──────────────┐ │ │</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "c3bafff39f72d8f4",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(13) > .plain.token\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\">│ │</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "c5846472dd7a7487",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(3) > .plain.token\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\">│ ┌──────────────┐ ┌───────────────────┐ │</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "c72c6394ba59301e",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(4) > .plain.token\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Test writer compression<br>or reduce publisher rate</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "imgNode",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "cb1ff586770f24ed",
+      "state": "default",
+      "target": "[\"#mermaid-svg-flowchart-D-5 > .label[transform=\\\"translate(-60, -58)\\\"] > foreignobject[height=\\\"116\\\"][width=\\\"120\\\"] > div > .nodeLabel > p\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/recipes"
+      ],
+      "rule": "color-contrast",
+      "signature": "cb9fee2f4872b685",
+      "state": "default",
+      "target": "[\".markdown-alert.markdown-alert-warning[dir=\\\"auto\\\"]:nth-child(4) > p:nth-child(2)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Test split sizes against<br>the upload workflow</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "imgNode",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "ccd3c50f5c885b8e",
+      "state": "default",
+      "target": "[\"#mermaid-svg-flowchart-I-15 > .label[transform=\\\"translate(-60, -58)\\\"] > foreignobject[height=\\\"116\\\"][width=\\\"120\\\"] > div > .nodeLabel > p\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td><code>infrastructure/setup/defaults.conf</code> → <code>GPU_OPERATOR_VERSION</code></td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/contributing"
+      ],
+      "rule": "color-contrast",
+      "signature": "ce601aa5f2462ff4",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"component-inventory\\\"] > tbody > tr:nth-child(1) > td:nth-child(3)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>Required only for private HuggingFace datasets (<code>hf_token</code> credential); Azure Blob and Data Asset sources use managed identity</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/training"
+      ],
+      "rule": "color-contrast",
+      "signature": "d1de04071581dc56",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"-prerequisites\\\"] > tbody > tr:nth-child(4) > td:nth-child(2)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\">│</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/infrastructure"
+      ],
+      "rule": "color-contrast",
+      "signature": "d419654b09a8ab6b",
+      "state": "default",
+      "target": "[\".language-text.codeBlockContainer.theme-code-block:nth-child(8) > .codeBlockContent > .language-text > .codeBlockLines > .token-line:nth-child(9) > .plain.token\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>TypeScript property tests</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/contributing"
+      ],
+      "rule": "color-contrast",
+      "signature": "d76b3b756f4e794d",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"architecture\\\"] > tbody > tr:nth-child(3) > td:nth-child(1)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td><code>infrastructure/setup/defaults.conf</code> → <code>OSMO_CHART_VERSION</code></td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/contributing"
+      ],
+      "rule": "color-contrast",
+      "signature": "d8265459c4240e58",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"component-inventory\\\"] > tbody > tr:nth-child(3) > td:nth-child(3)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Test a faster codec or level<br>or reduce input volume</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "imgNode",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "d8dff76e1e1d119b",
+      "state": "default",
+      "target": "[\"#mermaid-svg-flowchart-E-7 > .label[transform=\\\"translate(-60, -58)\\\"] > foreignobject[height=\\\"116\\\"][width=\\\"120\\\"] > div > .nodeLabel > p\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\">└────────────────────────────────┼────────────┘</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "d90dcc907b2edb86",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(18) > .plain.token\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/contributing"
+      ],
+      "rule": "color-contrast",
+      "signature": "d9748adf364335c5",
+      "state": "default",
+      "target": "[\".theme-doc-markdown > p:nth-child(7)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>OSMO<br>(KAI scheduling, NIM lifecycle)</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "imgNode",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/osmo-proxy"
+      ],
+      "rule": "color-contrast",
+      "signature": "d9b06d85af407d6c",
+      "state": "default",
+      "target": "[\"#mermaid-svg-flowchart-C-3 > .label[transform=\\\"translate(-60, -58)\\\"] > foreignobject[height=\\\"116\\\"][width=\\\"120\\\"] > div > .nodeLabel > p\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>Current <code>osmo_loadbalancer_ip</code> and any DNS variable overrides</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/infrastructure"
+      ],
+      "rule": "color-contrast",
+      "signature": "de188c965a840924",
+      "state": "default",
+      "target": "[\"tr:nth-child(3) > td:nth-child(3)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Primary observation?</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "imgNode",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "dfe4093be417d40b",
+      "state": "default",
+      "target": "[\"#mermaid-svg-flowchart-B-1 > .label[transform=\\\"translate(-60, -34)\\\"] > foreignobject[height=\\\"68\\\"][width=\\\"120\\\"] > div > .nodeLabel > p\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\">│ ▼ │ │</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "e11a663ddec8673a",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(12) > .plain.token\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td style=\"text-align:center\">✗</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/infrastructure"
+      ],
+      "rule": "color-contrast",
+      "signature": "e1233309153a652f",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"scenario-comparison\\\"] > tbody > tr:nth-child(3) > td:nth-child(2)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>One site, a few robots, optionally a shared GPU box. Local GPU still optional.</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/recipes"
+      ],
+      "rule": "color-contrast",
+      "signature": "e16606ef160b53aa",
+      "state": "default",
+      "target": "[\"tr:nth-child(1) > td:nth-child(2)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>API, CLI, or configuration schema changes</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/contributing"
+      ],
+      "rule": "color-contrast",
+      "signature": "e1f71b89078381aa",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"update-triggers\\\"] > tbody > tr:nth-child(1) > td:nth-child(1)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<span class=\"token plain\"> ▼</span>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "eb827be642f58a15",
+      "state": "default",
+      "target": "[\".language-text > .codeBlockLines > .token-line:nth-child(20) > .plain.token\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<li><code>framework: \"\"</code> → <code>framework: auto</code></li>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/evaluation"
+      ],
+      "rule": "color-contrast",
+      "signature": "ec78e149529631b5",
+      "state": "default",
+      "target": "[\"ul:nth-child(33) > li:nth-child(2)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<code>training/il/scripts/submit-azureml-lerobot-pipeline.sh --with-register --register-model-name &lt;name&gt;</code>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscured",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-01",
+      "routeFamilies": [
+        "/reference"
+      ],
+      "rule": "color-contrast",
+      "signature": "eed42016363a5623",
+      "state": "default",
+      "target": "[\"tr:nth-child(7) > td:nth-child(4) > code\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Developer / CI pipeline</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "imgNode",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/osmo-proxy"
+      ],
+      "rule": "color-contrast",
+      "signature": "f1495c0cd99949bb",
+      "state": "default",
+      "target": "[\"foreignobject[height=\\\"68\\\"][width=\\\"120\\\"] > div > .nodeLabel > p\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Test a faster codec or level<br>or reduce input volume</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "imgNode",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "f3decbce800eeec9",
+      "state": "default",
+      "target": "[\"#mermaid-svg-flowchart-E-7 > .label[transform=\\\"translate(-60, -58)\\\"] > foreignobject[height=\\\"116\\\"][width=\\\"120\\\"] > div > .nodeLabel > p\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td><code>infrastructure/setup/defaults.conf</code> → <code>GPU_OPERATOR_VERSION</code></td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "nonBmp",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/contributing"
+      ],
+      "rule": "color-contrast",
+      "signature": "f6ac14911e85f17b",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"component-inventory\\\"] > tbody > tr:nth-child(1) > td:nth-child(3)\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<td>Pure utility functions in the dataviewer frontend</td>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "elmPartiallyObscuring",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-28",
+      "routeFamilies": [
+        "/contributing"
+      ],
+      "rule": "color-contrast",
+      "signature": "f78cb5ff716d3900",
+      "state": "default",
+      "target": "[\"table[aria-labelledby=\\\"architecture\\\"] > tbody > tr:nth-child(3) > td:nth-child(3)\"]",
+      "theme": "light"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<p>Measure bag rate</p>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "imgNode",
+      "reviewBy": null,
+      "reviewedOn": "2026-10-02",
+      "routeFamilies": [
+        "/data-pipeline"
+      ],
+      "rule": "color-contrast",
+      "signature": "fb0e2a1004f781ff",
+      "state": "default",
+      "target": "[\"#mermaid-svg-flowchart-C-3 > .label[transform=\\\"translate(-60, -34)\\\"] > foreignobject[height=\\\"68\\\"][width=\\\"120\\\"] > div > .nodeLabel > p\"]",
+      "theme": "dark"
+    },
+    {
+      "classification": "unresolved",
+      "count": 1,
+      "evidence": null,
+      "freshnessTriggers": [
+        "Docusaurus, theme, or plugin upgrade",
+        "authored content change in a listed route family",
+        "shared component, design token, or stylesheet change"
+      ],
+      "html": "<h1 class=\"heroTitle\" id=\"_R_\">Physical AI Toolchain</h1>",
+      "owner": "unassigned",
+      "rationale": "Seeded from crawl output; axe could not decide this result and no qualified review exists yet.",
+      "reason": "bgImage",
+      "reviewBy": null,
+      "reviewedOn": "2026-09-19",
+      "routeFamilies": [
+        "/"
+      ],
+      "rule": "color-contrast",
+      "signature": "feaa4cc8d3053c4f",
+      "state": "default",
+      "target": "[\"#_R_\"]",
+      "theme": "light"
+    }
+  ],
+  "policy": "Every entry is unresolved and blocking until a qualified reviewer records an owner, rationale, deciding evidence, and a review date.",
+  "schemaVersion": 1,
+  "source": "docs/docusaurus/e2e/site-crawl.spec.ts"
+}

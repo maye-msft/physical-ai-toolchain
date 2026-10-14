@@ -2,7 +2,7 @@
 title: CI Smoke Scripts
 description: GPU-free import smoke scripts for training and evaluation domains, runnable locally and in CI.
 author: Microsoft Robotics-AI Team
-ms.date: 2026-09-23
+ms.date: 2026-10-04
 ---
 
 GPU-free import smoke checks that catch syntax, import, dependency-resolution, and interpreter/ABI regressions before they reach a GPU job. The same scripts run in CI (`.github/workflows/smoke-cpu.yml`) and locally.
@@ -29,6 +29,9 @@ shared/ci/smoke-image.sh vla --mode cpu
 shared/ci/smoke-image.sh evaluation --mode cpu
 shared/ci/smoke-image.sh vlm-judge --mode cpu
 shared/ci/smoke-image.sh osmo-replay --mode cpu
+shared/ci/smoke-image.sh gpu-smoke --mode cpu        # local-only CPU domains (not in the CI matrix yet)
+shared/ci/smoke-image.sh azureml-register --mode cpu
+shared/ci/smoke-image.sh osmo-proxy --mode cpu
 shared/ci/smoke-image.sh rl                       # runtime-image smoke (Isaac Lab)
 shared/ci/smoke-image.sh il                       # runtime-image smoke (PyTorch)
 shared/ci/smoke-image.sh vla                      # runtime-image smoke (PyTorch)
@@ -39,7 +42,7 @@ shared/ci/smoke-image.sh osmo-replay               # runtime-image smoke (Python
 shared/ci/smoke-import.sh rl --mode cpu
 ```
 
-`smoke-image.sh` mounts the repository at `/workspace` and runs `smoke-import.sh <domain> --mode <mode>` inside a linux/amd64 container: a lightweight uv image for `--mode cpu`, the domain's production image for `--mode image`. CI runs the CPU smoke directly on its linux runners and calls `smoke-image.sh` for the runtime-image depth after a free-disk-space step.
+`smoke-image.sh` mounts the repository at `/workspace` and runs `smoke-import.sh <domain> --mode <mode>` inside a linux/amd64 container: a lightweight uv image for `--mode cpu`, the domain's production image for `--mode image`. CI runs the CPU smoke directly on its linux runners and calls `smoke-image.sh` for the runtime-image depth.
 
 > [!NOTE]
 > The runtime images are multi-gigabyte. The first `--mode image` run pulls the image; expect several minutes and ensure free disk.
@@ -53,14 +56,19 @@ shared/ci/smoke-import.sh rl --mode cpu
 
 ## 🧪 Domains
 
-| Domain        | Python | Runtime image                           | CPU smoke | Runtime-image smoke |
-|---------------|--------|-----------------------------------------|-----------|---------------------|
-| `rl`          | 3.11   | Isaac Lab (`DEFAULT_ISAAC_LAB_IMAGE`)   | yes       | yes                 |
-| `il`          | 3.12   | PyTorch (`lerobot-train.yaml` default)  | yes       | yes                 |
-| `vla`         | 3.12   | PyTorch (`DEFAULT_LEROBOT_TRAIN_IMAGE`) | yes       | yes                 |
-| `evaluation`  | 3.12   | PyTorch (`evaluate.yaml`)               | yes       | yes                 |
-| `vlm-judge`   | 3.12   | none                                    | yes       | no                  |
-| `osmo-replay` | 3.11   | Python (`replay-azureml.yaml`)          | yes       | yes                 |
+| Domain             | Python | Runtime image                             | CPU smoke  | Runtime-image smoke |
+|--------------------|--------|-------------------------------------------|------------|---------------------|
+| `rl`               | 3.12   | Isaac Lab 3.0 (`DEFAULT_ISAAC_LAB_IMAGE`) | yes        | yes                 |
+| `il`               | 3.12   | PyTorch (`lerobot-train.yaml` default)    | yes        | yes                 |
+| `vla`              | 3.12   | PyTorch (`DEFAULT_LEROBOT_TRAIN_IMAGE`)   | yes        | yes                 |
+| `evaluation`       | 3.12   | PyTorch (`evaluate.yaml`)                 | yes        | yes                 |
+| `vlm-judge`        | 3.12   | none                                      | yes        | no                  |
+| `osmo-replay`      | 3.11   | Python (`replay-azureml.yaml`)            | yes        | yes                 |
+| `gpu-smoke`        | 3.11   | none                                      | local only | no                  |
+| `azureml-register` | 3.12   | none                                      | local only | no                  |
+| `osmo-proxy`       | 3.12   | none                                      | local only | no                  |
+
+The `gpu-smoke`, `azureml-register`, and `osmo-proxy` domains install the `training/smoke`, `workflows/azureml/scripts`, and `workflows/azureml/osmo-proxy` locks, which no CI job installs today. They run locally, for example through `npm run verify:dependabot`, until the CI import-smoke matrix and CI contract add them. The `azureml-register` probe imports only the component's dependencies because `register_model.py` reads job environment variables at import.
 
 Image references come from their source of truth: `scripts/lib/common.sh` for `rl` and `vla`, `training/il/workflows/osmo/lerobot-train.yaml` for `il`, `evaluation/sil/workflows/azureml/components/evaluate.yaml` for `evaluation`, and `workflows/osmo/replay-azureml.yaml` for `osmo-replay`.
 
@@ -96,6 +104,12 @@ The CPU depth is also the cheap baseline that runs on every PR, while the runtim
 The domain locks encode pyproject `override-dependencies` and package sources. The IL, VLA, and evaluation runtime-image smokes use frozen `uv sync`, preserving the explicit PyTorch CUDA index. Evaluation uses the IL runtime lock in `training/il/lerobot`; its CPU smoke uses the `evaluation` lock. The RL and OSMO replay runtime-image smokes export their locks and install with `--no-deps`. Both paths install the committed resolution rather than resolving dependencies again.
 
 The import step is required: dependency or ABI skew can install cleanly and fail only when imported. For the CPU depth, the export removes the CUDA local-version suffix from torch and torchvision before `--torch-backend cpu` selects CPU wheels, and strips standalone `nvidia-*`, `cuda-*`, and `torchcodec` packages. Installation uses `--no-deps` to retain the exported versions.
+
+When a runtime image lacks uv, `smoke-import.sh` downloads the pinned archive with at most three attempts.
+Each transfer has a 35-second limit, with two-second pauses, so transfer recovery takes less than 120 seconds.
+Only connection and timeout errors or HTTP 408, 429, and 5xx responses are retried.
+A 404, checksum mismatch, invalid archive, install failure, or failed import stops the smoke immediately.
+Run `bash shared/ci/tests/smoke-import-bootstrap.sh` to exercise the controlled transfer and archive fixtures locally.
 
 ### Per-domain runtime images and interpreters
 

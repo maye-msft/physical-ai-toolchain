@@ -301,7 +301,22 @@ topics:
 | Write latency is high     | Measure sustained disk throughput and cache behavior; bag splitting is not a flush control |
 | Upload is slow            | Transfer completed files; test split sizes against the upload workflow                     |
 
-Compression, caches, and chunk sizes trade CPU, memory, and throughput. Benchmark each change and validate recorded messages; none guarantees durability after a crash.
+```mermaid
+flowchart TD
+  accTitle: Recording performance troubleshooting flow
+  accDescr: Decision tree for measuring recording performance and selecting tests for storage growth, CPU saturation, write latency, and slow uploads.
+    A[Recording problem detected] --> B{Primary observation?}
+    B -- Storage fills quickly --> C[Measure bag rate]
+    C --> D[Test writer compression<br/>or reduce publisher rate]
+    B -- CPU saturated --> E[Test a faster codec or level<br/>or reduce input volume]
+    B -- Write latency high --> F[Measure sustained disk throughput<br/>and cache behavior]
+    F --> G[Do not treat bag splitting<br/>as a flush control]
+    B -- Upload slow --> H[Transfer completed files]
+    H --> I[Test split sizes against<br/>the upload workflow]
+```
+
+> [!IMPORTANT]
+> Compression, caches, and chunk sizes trade CPU, memory, and throughput. Benchmark each change and validate recorded messages; none guarantees durability after a crash.
 
 ## Troubleshooting
 
@@ -356,3 +371,7 @@ Post-processing or LeRobot conversion fails with codec errors. Identify whether 
 [^5]: [MCAP ROS 2 storage plugin](https://mcap.dev/guides/getting-started/ros-2) — `rosbag2_storage_mcap` with chunk-level compression (Lz4, Zstd) and `--storage-config-file` options.
 [^6]: [Zstandard RFC 8878](https://datatracker.ietf.org/doc/html/rfc8878) — Zstandard compression data format specification.
 [^7]: [ROS 2 Humble record arguments](https://github.com/ros2/rosbag2/blob/humble/ros2bag/ros2bag/verb/record.py): native topic selection, output, splitting, cache, and storage configuration options.
+
+---
+
+🤖 Crafted with precision by ✨Copilot following brilliant human instruction, then carefully refined by our team of discerning human reviewers.

@@ -1,33 +1,41 @@
 """FastAPI application entry point."""
 
+from __future__ import annotations
+
+import asyncio
 import logging
 import os
+import tempfile
 from collections.abc import AsyncGenerator
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 from pathlib import Path
+from typing import Any
 
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
-from .auth import PrincipalContext, require_auth, require_principal_context
-from .csrf import CSRF_COOKIE_NAME, generate_csrf_token
+from .auth import MediaSession, PrincipalContext, issue_media_session, require_auth, require_principal_context
+from .csrf import CSRF_COOKIE_NAME, generate_csrf_token, require_csrf_token
 from .middleware import ContentSizeLimitMiddleware, SecurityHeadersMiddleware
 from .rate_limiter import limiter
 from .routers import analysis, annotations, datasets, detection, export, joint_config, labels, vlm_judge
 from .routes import ai_analysis
+from .services.dataset_service import EpisodeLoadError
 from .storage import RevisionConflictError
 from .swagger_ui import install_responsive_swagger_ui
 
-# Configure logging to show INFO level
+# Match application verbosity to uvicorn's effective CLI level without replacing its handlers.
+_log_level = logging.getLogger("uvicorn.error").level or logging.INFO
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=_log_level,
+    format="%(asctime)s - %(levelname)s %(name)s - %(message)s",
 )
+logging.getLogger("src.api").setLevel(_log_level)
 
 # Suppress verbose Azure SDK HTTP request logging
 logging.getLogger("azure").setLevel(logging.WARNING)
@@ -47,9 +55,53 @@ _config = load_config()
 logger = logging.getLogger(__name__)
 
 
+def _validate_local_storage_writable(data_path: str) -> None:
+    """Verify local storage supports the atomic writes used for annotations."""
+    file_descriptor: int | None = None
+    temporary_path: str | None = None
+    replacement_path: str | None = None
+
+    try:
+        file_descriptor, temporary_path = tempfile.mkstemp(
+            dir=data_path,
+            prefix=".dataviewer-write-",
+            suffix=".tmp",
+        )
+        os.write(file_descriptor, b"dataviewer-storage-probe")
+        os.fsync(file_descriptor)
+        os.close(file_descriptor)
+        file_descriptor = None
+
+        replacement_path = f"{temporary_path}.replace"
+        os.replace(temporary_path, replacement_path)
+        temporary_path = None
+        os.unlink(replacement_path)
+        replacement_path = None
+    except OSError as exc:
+        sanitized_path = data_path.replace("\r", "").replace("\n", "")
+        effective_uid = os.geteuid() if hasattr(os, "geteuid") else -1
+        effective_gid = os.getegid() if hasattr(os, "getegid") else -1
+        raise RuntimeError(
+            f"Local storage path '{sanitized_path}' is not writable by effective UID {effective_uid} "
+            f"and GID {effective_gid}. Grant the process write access. For rootful Docker on Linux or WSL, "
+            "set DATAVIEWER_UID and DATAVIEWER_GID to the results of 'id -u' and 'id -g'."
+        ) from exc
+    finally:
+        if file_descriptor is not None:
+            with suppress(OSError):
+                os.close(file_descriptor)
+        for path in (temporary_path, replacement_path):
+            if path is not None:
+                with suppress(OSError):
+                    os.unlink(path)
+
+
 @asynccontextmanager
 async def lifespan(_app: FastAPI) -> AsyncGenerator[None]:
-    """Clean up blob sync temp directories on shutdown."""
+    """Validate local storage and clean up blob sync directories."""
+    if _config.storage_backend == "local":
+        await asyncio.to_thread(_validate_local_storage_writable, _config.data_path)
+
     yield
     from .services.dataset_service import get_dataset_service
 
@@ -107,6 +159,12 @@ async def revision_conflict_handler(_request, exc: RevisionConflictError) -> JSO
         },
         headers=headers,
     )
+
+
+@app.exception_handler(EpisodeLoadError)
+async def episode_load_error_handler(_request, exc: EpisodeLoadError) -> JSONResponse:
+    """Report an episode its dataset's handler couldn't load, rather than letting it pass as empty."""
+    return JSONResponse(status_code=500, content={"code": "EPISODE_LOAD_FAILED", "message": str(exc)})
 
 
 @app.exception_handler(Exception)
@@ -217,3 +275,18 @@ async def get_auth_context(
 ) -> PrincipalContext:
     """Return the opaque ownership scope for the authenticated principal."""
     return principal
+
+
+@app.post(
+    "/api/auth/media-session",
+    response_model=MediaSession,
+    tags=["auth"],
+    dependencies=[Depends(require_csrf_token)],
+)
+async def create_media_session(
+    request: Request,
+    response: Response,
+    user: dict[str, Any] | None = Depends(require_auth),
+) -> MediaSession:
+    """Authorize native same-origin images and range-based video without URL credentials."""
+    return issue_media_session(request, response, user)

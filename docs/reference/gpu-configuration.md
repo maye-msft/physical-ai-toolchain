@@ -4,7 +4,7 @@ sidebar_label: GPU Configuration
 sidebar_position: 1
 description: GPU driver and operator configuration for H100 and RTX PRO 6000 nodes.
 author: Microsoft Robotics-AI Team
-ms.date: 2026-09-19
+ms.date: 2026-10-08
 ms.topic: concept
 ---
 
@@ -14,15 +14,30 @@ GPU driver management, MIG configuration, and runtime behavior for the mixed GPU
 
 This cluster uses two GPU node pool types with different driver and runtime profiles.
 
-| Property               | H100 (`h100gpu`)               | RTX PRO 6000 (`rtxprogpu`)                            |
-|------------------------|--------------------------------|-------------------------------------------------------|
-| Azure VM SKU           | `Standard_NC40ads_H100_v5`     | `Standard_NC128ds_xl_RTXPRO6000BSE_v6`                |
-| GPU passthrough        | PCIe passthrough               | SR-IOV vGPU (PCI ID `10de:2bb5`)                      |
-| Driver source          | GPU Operator datacenter driver | Custom GRID DaemonSet (`gpu-grid-driver-installer`)   |
-| Driver branch          | Standard datacenter            | Microsoft GRID `580.105.08-grid-azure`                |
-| MIG at hardware level  | Disabled                       | Enabled by vGPU host                                  |
-| Vulkan device creation | Supported                      | Supported (requires `NVIDIA_DRIVER_CAPABILITIES=all`) |
-| Kernel module type     | Open (default)                 | Proprietary (required for vGPU)                       |
+| Property               | H100 (`h100gpu`)               | RTX PRO 6000 (`rtxprogpu`)                                    |
+|------------------------|--------------------------------|---------------------------------------------------------------|
+| Azure VM SKU           | `Standard_NC40ads_H100_v5`     | `Standard_NC144ds_xl_RTXPRO6000BSE_v6` (one 96 GB GPU)        |
+| GPU passthrough        | PCIe passthrough               | SR-IOV vGPU (PCI ID `10de:2bb5`)                              |
+| Driver source          | GPU Operator datacenter driver | AKS-managed GRID driver (`gpu_driver = "Install"`)            |
+| Driver branch          | Standard datacenter            | Microsoft GRID vGPU 20 (R595)                                 |
+| MIG at hardware level  | Disabled                       | Enabled by vGPU host                                          |
+| Vulkan device creation | Supported                      | Supported (requires `NVIDIA_DRIVER_CAPABILITIES=all`)         |
+| Kernel module type     | Open (default)                 | Open (Microsoft installs the NCv6 GRID driver with `-M open`) |
+
+### RTX PRO 6000 Sizes and Quota
+
+Use a GA size. The preview sizes with 128, 256, and 320 vCPUs no longer deploy, so pools created on them fail to allocate nodes and must move to a new pool on a GA size.
+
+| Size                                   | vCPUs | GPUs | GPU memory |
+|----------------------------------------|-------|------|------------|
+| `Standard_NC36ds_xl_RTXPRO6000BSE_v6`  | 36    | 1/4  | 24 GB      |
+| `Standard_NC72ds_xl_RTXPRO6000BSE_v6`  | 72    | 1/2  | 48 GB      |
+| `Standard_NC144ds_xl_RTXPRO6000BSE_v6` | 144   | 1    | 96 GB      |
+| `Standard_NC288ds_xl_RTXPRO6000BSE_v6` | 288   | 2    | 192 GB     |
+
+Every node counts its vCPUs against the regional RTX PRO 6000 quota family, and an upgrade surges one extra node by default. A one-node `NC144ds_xl` pool needs 288 vCPUs of quota to upgrade, or 144 when the pool sets `max_unavailable = "1"` and accepts downtime while its node upgrades.
+
+Until the quota exists, keep the pool parked with autoscaling off and `node_count = 0`, as described in [Manage Node Pools](../infrastructure/manage-node-pools.md#park-a-pool-without-nodes), so no deployment or scale-up tries to allocate a node.
 
 ## GPU Driver Management
 
@@ -32,15 +47,19 @@ The GPU Operator manages the full driver lifecycle for H100 nodes using its buil
 
 ### RTX PRO 6000 Nodes
 
-RTX PRO 6000 BSE nodes use Azure SR-IOV vGPU passthrough, which requires the Microsoft GRID driver instead of the NVIDIA datacenter driver. AKS does not support `gpu_driver = "Install"` for this VM SKU.
+RTX PRO 6000 BSE nodes use Azure SR-IOV vGPU passthrough, which needs the Microsoft GRID driver instead of the NVIDIA datacenter driver. AKS installs the GRID driver (vGPU 20, R595) itself when the pool sets `gpu_driver = "Install"`, so new pools need no custom installer or driver label. The GPU Operator detects the AKS-installed driver, labels the nodes `nvidia.com/gpu.deploy.driver=pre-installed`, and skips its driver container while still managing the toolkit, device-plugin, and validator components.
 
-The `gpu-grid-driver-installer` DaemonSet ([manifests/gpu-grid-driver-installer.yaml](https://github.com/microsoft/physical-ai-toolchain/blob/main/infrastructure/setup/manifests/gpu-grid-driver-installer.yaml)) installs the GRID driver on each RTX node. Terraform labels these nodes with `nvidia.com/gpu.deploy.driver=false`, causing the GPU Operator to skip its driver DaemonSet on those nodes while still managing toolkit, device-plugin, and validator components.
+#### GRID Driver DaemonSet Fallback
 
-The GRID driver is installed via an init container that uses `nsenter` into the host namespace to download and compile the driver. New nodes added by the autoscaler receive the driver automatically through the DaemonSet.
+A pool created with `gpu_driver = "None"` gets no AKS driver. For those pools, the `gpu-grid-driver-installer` DaemonSet ([manifests/gpu-grid-driver-installer.yaml](https://github.com/microsoft/physical-ai-toolchain/blob/main/infrastructure/setup/manifests/gpu-grid-driver-installer.yaml)) installs Microsoft's vGPU 20.2 GRID driver on each node labeled `nvidia.com/gpu.deploy.driver=false`. The label also makes the GPU Operator skip its driver DaemonSet on those nodes.
+
+`01-deploy-robotics-charts.sh` applies the DaemonSet only when labeled nodes exist. A pool's driver choice can't change after creation, so moving a fallback pool to AKS-managed drivers means creating a new pool.
+
+The GRID driver is installed via an init container that uses `nsenter` into the host namespace to download, verify, and compile the driver. New nodes added by the autoscaler receive the driver automatically through the DaemonSet.
 
 #### GPU Operator Validation Dependency
 
-The GPU Operator's downstream components (toolkit, device-plugin, GFD, DCGM exporter, validator) each have a `driver-validation` init container that performs two checks before allowing the main container to start:
+This dependency applies to nodes that use the fallback DaemonSet. The GPU Operator's downstream components (toolkit, device-plugin, GFD, DCGM exporter, validator) each have a `driver-validation` init container that performs two checks before allowing the main container to start:
 
 1. **Validation marker**: Polls for `/run/nvidia/validations/.driver-ctr-ready` on the host. On operator-managed nodes, the driver DaemonSet creates this file. On nodes with a pre-installed driver (`nvidia.com/gpu.deploy.driver=false`), the GRID driver installer creates it.
 
@@ -52,6 +71,26 @@ Without both of these, all downstream GPU Operator pods remain stuck in `Init:0/
 > The GPU Operator supports [custom vGPU driver containers](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/install-gpu-operator-vgpu.html),
 > but this requires building a private container image, a private registry, and NVIDIA vGPU licensing infrastructure.
 > The DaemonSet approach is functionally equivalent without that overhead.
+
+### Node OS on Kubernetes 1.35
+
+Kubernetes 1.35 moves node pools that use the default `Ubuntu` OS SKU to Ubuntu 24.04 and containerd 2.3. On that image, the GPU Operator v25.10 container toolkit writes `/etc/containerd/conf.d/99-nvidia.toml` with `version = 4` next to AKS's `version = 2` root config, and containerd refuses to start:
+
+```text
+containerd: drop-in config version 4 higher than root config version 2
+```
+
+The node then stays `NotReady` with `ContainerRuntimeProblem` and never advertises a GPU. The toolkit runs on every GPU node, including pools with AKS-installed drivers. Set `os_sku = "Ubuntu2204"` on GPU pools until the GPU Operator release you deploy handles this layout. AKS supports `Ubuntu2204` through Kubernetes 1.36, and changing `os_sku` between Ubuntu versions updates a pool in place. CPU pools can run Ubuntu 24.04.
+
+### Driver Auto-upgrade on AKS-installed Drivers
+
+The GPU Operator chart enables driver auto-upgrade (`driver.upgradePolicy.autoUpgrade: true`). On a new node with an AKS-installed driver, the upgrade controller can cordon the node and leave it at `nvidia.com/gpu-driver-upgrade-state=pod-restart-required`, waiting for a driver pod that never returns because the node is labeled `nvidia.com/gpu.deploy.driver=pre-installed`. Work that scaled the pool up can't schedule on it. Label pools that set `gpu_driver = "Install"` so the controller skips them:
+
+```hcl
+node_labels = { "nvidia.com/gpu-driver-upgrade.skip" = "true" }
+```
+
+AKS updates those drivers through node image upgrades, not through the GPU Operator.
 
 ## MIG Strategy
 
@@ -105,7 +144,7 @@ environment:
 
 ### RTX PRO 6000 vGPU Profile
 
-The `Standard_NC128ds_xl_RTXPRO6000BSE_v6` VM exposes a `DC-4-96Q` vGPU profile (Q-series = RTX Virtual Workstation). Q-series profiles provide full Vulkan support including ray tracing extensions:
+A whole-GPU RTX PRO 6000 VM exposes a `DC-4-96Q` vGPU profile (Q-series = RTX Virtual Workstation). Q-series profiles provide full Vulkan support including ray tracing extensions. This output was captured on a whole-GPU node running the earlier 580 GRID driver:
 
 ```text
 $ vulkaninfo --summary
@@ -170,7 +209,13 @@ After `env.close()`, training scripts call `os._exit(0)` instead of `simulation_
 
 ## Related Resources
 
+* [Use GPUs on AKS](https://learn.microsoft.com/azure/aks/use-nvidia-gpu)
+* [Install NVIDIA GPU drivers on N-series VMs running Linux](https://learn.microsoft.com/azure/virtual-machines/linux/n-series-driver-setup)
 * [NVIDIA GPU Operator with Azure AKS](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/microsoft-aks.html)
 * [NVIDIA GPU Operator vGPU support](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/install-gpu-operator-vgpu.html)
 * [GPU Operator Helm values](https://github.com/microsoft/physical-ai-toolchain/blob/main/infrastructure/setup/values/nvidia-gpu-operator.yaml)
 * [GRID driver installer DaemonSet](https://github.com/microsoft/physical-ai-toolchain/blob/main/infrastructure/setup/manifests/gpu-grid-driver-installer.yaml)
+
+---
+
+🤖 Crafted with precision by ✨Copilot following brilliant human instruction, then carefully refined by our team of discerning human reviewers.

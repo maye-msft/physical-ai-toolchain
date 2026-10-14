@@ -1,8 +1,12 @@
-"""Pytest configuration and shared fixtures for integration tests."""
+"""Shared pytest configuration and fixtures for backend tests."""
 
 from __future__ import annotations
 
+import contextlib
+import hashlib
+import json
 import os
+from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
@@ -46,6 +50,42 @@ TEST_DATASET_PATH = os.environ.get(
 TEST_DATASET_ID = os.environ.get("TEST_DATASET_ID", "lerobot")
 
 
+@pytest.fixture
+def held_locks() -> Iterator[contextlib.ExitStack]:
+    """Export locks a test holds as another export would, released when the test ends."""
+    with contextlib.ExitStack() as stack:
+        yield stack
+
+
+@pytest.fixture
+def accepted_dataset_path(tmp_path: Path) -> Path:
+    """Create an accepted dataset descriptor with matching artifact hashes."""
+    dataset_path = tmp_path / "accepted-dataset"
+    dataset_path.mkdir()
+    artifacts = {}
+    for name, content in {
+        "capture_provenance": b'{"profile_id":"profile-alpha"}',
+        "export_validation": b'{"status":"pass"}',
+    }.items():
+        filename = f"{name.replace('_', '-')}.json"
+        (dataset_path / filename).write_bytes(content)
+        artifacts[name] = {"file": filename, "sha256": hashlib.sha256(content).hexdigest()}
+    descriptor = {
+        "schema_version": 1,
+        "dataset_id": dataset_path.name,
+        "output_adapter_id": "lerobot_v3",
+        "output_adapter_version": "0.6.0",
+        "viewer_adapter_id": "dataviewer_v1",
+        "profile_id": "profile-alpha",
+        "profile_sha256": "a" * 64,
+        "capture_features": [{"feature_id": "state-alpha", "kind": "observation_state"}],
+        "sensors": [{"sensor_id": "view-alpha", "media_kind": "rgb"}],
+        "artifacts": artifacts,
+    }
+    (dataset_path / "accepted-dataset.json").write_text(json.dumps(descriptor), encoding="utf-8")
+    return dataset_path
+
+
 def _write_accessibility_episode(path: Path, *, length: int, phase: float) -> None:
     """Write one deterministic synthetic HDF5 episode."""
     h5py = pytest.importorskip("h5py")
@@ -87,48 +127,57 @@ def accessibility_dataset_path(tmp_path_factory: pytest.TempPathFactory) -> Path
 
 
 @pytest.fixture(autouse=True, scope="session")
-def disable_auth_for_tests():
-    """Disable authentication and CSRF checks for all tests."""
-    os.environ["DATAVIEWER_AUTH_DISABLED"] = "true"
-    yield
-    os.environ.pop("DATAVIEWER_AUTH_DISABLED", None)
+def configure_test_environment(tmp_path_factory: pytest.TempPathFactory) -> Iterator[None]:
+    """Configure authentication and writable local storage for tests."""
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        monkeypatch.setenv("DATAVIEWER_AUTH_DISABLED", "true")
+        monkeypatch.setenv("DATA_DIR", str(tmp_path_factory.mktemp("default-datasets")))
+
+        import src.api.config as config_mod
+        import src.api.main as main_mod
+
+        previous_config = main_mod._config
+        config_mod._app_config = None
+        main_mod._config = config_mod.load_config()
+        yield
+        config_mod._app_config = None
+        main_mod._config = previous_config
 
 
 @pytest.fixture(scope="session")
-def test_dataset_path():
-    """Absolute path to the directory containing the test LeRobot dataset."""
-    if not os.path.isdir(TEST_DATASET_PATH):
-        pytest.skip(f"Dataset base path not found: {TEST_DATASET_PATH}")
-    if not os.path.isdir(os.path.join(TEST_DATASET_PATH, TEST_DATASET_ID)):
-        pytest.skip(f"LeRobot dataset not found at {TEST_DATASET_PATH}/{TEST_DATASET_ID}")
-    return TEST_DATASET_PATH
+def test_dataset_path(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """Return an isolated dataset root for tests that need session scope."""
+    return tmp_path_factory.mktemp("datasets")
 
 
 @pytest.fixture(scope="session")
-def test_dataset_id():
-    return TEST_DATASET_ID
+def test_dataset_id() -> str:
+    return "test-dataset"
 
 
-@pytest.fixture
-def client(test_dataset_path):
-    """Create a FastAPI test client with DATA_DIR pointing to the real dataset."""
-    os.environ["DATA_DIR"] = test_dataset_path
-
+def _reset_singletons() -> None:
     import src.api.config as config_mod
+    import src.api.routers.labels as labels_mod
     import src.api.services.annotation_service as ann_mod
     import src.api.services.dataset_service.service as ds_mod
 
-    # Reset all singletons so each test gets a fresh service instance that
-    # re-reads the current DATA_DIR from the environment.
     config_mod._app_config = None
     ds_mod._dataset_service = None
     ann_mod._annotation_service = None
+    labels_mod._label_storage = None
 
-    from src.api.main import app
 
-    with TestClient(app) as c:
+@pytest.fixture
+def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[TestClient]:
+    """Create an isolated FastAPI client backed by a temporary data directory."""
+    monkeypatch.setenv("DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("STORAGE_BACKEND", "local")
+    _reset_singletons()
+
+    import src.api.main as main_mod
+
+    with TestClient(main_mod.app) as c:
         yield c
 
-    config_mod._app_config = None
-    ds_mod._dataset_service = None
-    ann_mod._annotation_service = None
+    main_mod.app.dependency_overrides.clear()
+    _reset_singletons()

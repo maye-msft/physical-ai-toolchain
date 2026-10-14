@@ -6,6 +6,7 @@
  * - AKS cluster with Azure CNI Overlay networking
  * - System node pool for core workloads
  * - GPU node pools via for_each (configurable)
+ * - Optional cluster autoscaler profile
  * - Workload identity and OIDC issuer enabled
  * - Private endpoint for private clusters
  *
@@ -37,7 +38,8 @@ resource "azurerm_kubernetes_cluster" "main" {
   dns_prefix                        = "aks-${var.resource_prefix}-${var.environment}"
   kubernetes_version                = null // Use latest stable version
   automatic_upgrade_channel         = "patch"
-  sku_tier                          = "Standard"
+  sku_tier                          = var.aks_config.sku_tier
+  support_plan                      = var.aks_config.support_plan
   private_cluster_enabled           = var.aks_config.should_enable_private_cluster
   private_dns_zone_id               = var.aks_config.should_enable_private_cluster && local.pe_enabled ? var.private_dns_zones["aks"].id : null
   local_account_disabled            = true
@@ -69,6 +71,14 @@ resource "azurerm_kubernetes_cluster" "main" {
       max_surge                     = "10%"
       drain_timeout_in_minutes      = 0
       node_soak_duration_in_minutes = 0
+    }
+  }
+
+  dynamic "auto_scaler_profile" {
+    for_each = var.aks_config.auto_scaler_profile == null ? [] : [var.aks_config.auto_scaler_profile]
+    content {
+      expander               = auto_scaler_profile.value.expander
+      new_pod_scale_up_delay = auto_scaler_profile.value.new_pod_scale_up_delay
     }
   }
 
@@ -132,7 +142,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "gpu" {
   kubernetes_cluster_id = azurerm_kubernetes_cluster.main.id
   node_count            = each.value.node_count
   vm_size               = each.value.vm_size
-  vnet_subnet_id        = azurerm_subnet.gpu_node_pool[each.key].id
+  vnet_subnet_id        = azurerm_subnet.gpu_node_pool[coalesce(each.value.subnet_pool_key, each.key)].id
   node_taints           = each.value.node_taints
   auto_scaling_enabled  = each.value.should_enable_auto_scaling
   min_count             = each.value.should_enable_auto_scaling ? each.value.min_count : null
@@ -142,14 +152,17 @@ resource "azurerm_kubernetes_cluster_node_pool" "gpu" {
   eviction_policy       = each.value.priority == "Spot" ? each.value.eviction_policy : null
   gpu_driver            = each.value.gpu_driver
   node_labels           = each.value.node_labels
+  os_sku                = each.value.os_sku
 
   // Spot pools do not support upgrade_settings (Azure rejects maxUnavailable for Spot)
   dynamic "upgrade_settings" {
     for_each = each.value.priority != "Spot" ? [1] : []
     content {
-      max_surge                     = "10%"
+      max_surge                     = each.value.max_unavailable == null ? coalesce(each.value.max_surge, "10%") : null
+      max_unavailable               = each.value.max_unavailable
       drain_timeout_in_minutes      = 0
       node_soak_duration_in_minutes = 0
+      undrainable_node_behavior     = each.value.undrainable_node_behavior
     }
   }
 

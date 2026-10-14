@@ -9,6 +9,7 @@
 #               PR's committed lock exactly as production does and imports the
 #               domain on the real interpreter. Catches the interpreter/ABI-at-
 #               import class. Expects the repository mounted at the CWD.
+# cspell:ignore redir
 set -o errexit -o nounset -o pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -17,8 +18,8 @@ REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || (cd "$SCRIPT_DIR/../..
 source "$REPO_ROOT/scripts/lib/common.sh"
 
 # Pinned uv for in-container bootstrap, mirroring training/rl/scripts/setup_isaac_runtime.sh.
-UV_VERSION="0.12.8"
-UV_SHA256="2e2b37e9811e17675a9e70bed5e1a58fc8c0388be63d751d72cc735188c149ff"
+UV_VERSION="0.12.20"
+UV_SHA256="6590717592ace991ff83a63fef799e3ad9d33ecc8f96c5d6bdd732496e79337f"
 
 show_help() {
     cat << EOF
@@ -27,12 +28,15 @@ Usage: $(basename "$0") DOMAIN [OPTIONS]
 Install a domain's locked dependencies and import it, GPU-free.
 
 DOMAIN:
-    rl            Reinforcement learning (training/rl), Python 3.11
+    rl            Reinforcement learning (training/rl), Python 3.12
     il            Imitation learning / LeRobot (training/il/lerobot), Python 3.12
     vla           Vision-language-action / LeRobot (training/vla/lerobot), Python 3.12
     evaluation    Software-in-the-loop evaluation (evaluation), Python 3.12
     vlm-judge     VLM-as-judge optional runtime (evaluation/vlm_judge), Python 3.12
     osmo-replay   OSMO-to-AzureML replay mirror (workflows/osmo), Python 3.11
+    gpu-smoke     Azure ML GPU smoke job (training/smoke), Python 3.11, cpu mode only
+    azureml-register  Azure ML register-model component (workflows/azureml/scripts), Python 3.12, cpu mode only
+    osmo-proxy    Azure ML-to-OSMO proxy job (workflows/azureml/osmo-proxy), Python 3.12, cpu mode only
 
 OPTIONS:
     -m, --mode MODE    cpu (default) or image
@@ -70,14 +74,16 @@ done
 # project    Directory holding the domain's pyproject.toml + uv.lock.
 # py_version Interpreter the domain targets (matches its requires-python).
 # probe      Import probe run AFTER install; non-zero exit fails the smoke.
+# has_image  Whether the domain has a production runtime image for --mode image.
 
 declare project py_version
 declare -a export_args probe
+has_image=true
 
 case "$domain" in
     rl)
         project="training/rl"
-        py_version="3.11"
+        py_version="3.12"
         # Import the heavy framework stack (the #809 ABI surface) plus the
         # first-party entrypoint. launch.py defers Isaac/skrl imports, so a bare
         # module import would not exercise the ABI the gate exists to catch.
@@ -116,10 +122,36 @@ case "$domain" in
     vlm-judge)
         project="evaluation/vlm_judge"
         py_version="3.12"
+        has_image=false
         probe=(-c "import torch, torchvision, transformers; from transformers import AutoProcessor")
         ;;
-    *) fatal "Unknown domain: $domain (expected rl, il, vla, evaluation, vlm-judge, or osmo-replay)" ;;
+    gpu-smoke)
+        project="training/smoke"
+        py_version="3.11"
+        has_image=false
+        # torch comes from the job's container image, so the probe imports the
+        # Azure/MLflow stack and the first-party module, whose imports are lazy.
+        probe=(-c "import azure.ai.ml, azure.identity, azure.storage.blob, azureml.mlflow, mlflow, jwt; import training.smoke.scripts.azureml_gpu_smoke")
+        ;;
+    azureml-register)
+        project="workflows/azureml/scripts"
+        py_version="3.12"
+        has_image=false
+        # register_model.py reads job environment variables at import, so probe
+        # only its dependency surface.
+        probe=(-c "import azure.ai.ml, azure.identity")
+        ;;
+    osmo-proxy)
+        project="workflows/azureml/osmo-proxy"
+        py_version="3.12"
+        has_image=false
+        # GitPython refuses to import without a git binary, which the CPU image lacks.
+        probe=(-c "import importlib.util, os; os.environ.setdefault('GIT_PYTHON_REFRESH', 'quiet'); import requests, yaml, git, mlflow, azureml.mlflow, azure.ai.ml, azure.identity; spec = importlib.util.spec_from_file_location('osmo_proxy', 'workflows/azureml/osmo-proxy/osmo_proxy.py'); spec.loader.exec_module(importlib.util.module_from_spec(spec))")
+        ;;
+    *) fatal "Unknown domain: $domain (expected rl, il, vla, evaluation, vlm-judge, osmo-replay, gpu-smoke, azureml-register, or osmo-proxy)" ;;
 esac
+
+[[ "$mode" == "cpu" || "$has_image" == "true" ]] || fatal "${domain} has no runtime-image smoke; use --mode cpu"
 
 export_args=(--frozen --no-hashes --no-emit-project --project "$project")
 [[ "$domain" == "vlm-judge" ]] && export_args+=(--extra qwen3-vl)
@@ -128,12 +160,52 @@ ensure_uv() {
     # Bootstrap a pinned uv inside a container that lacks it (image mode).
     command -v uv &> /dev/null && return 0
     info "Installing uv ${UV_VERSION}"
-    curl -LsSf "https://github.com/astral-sh/uv/releases/download/${UV_VERSION}/uv-x86_64-unknown-linux-gnu.tar.gz" -o /tmp/uv.tar.gz
-    echo "${UV_SHA256}  /tmp/uv.tar.gz" | sha256sum -c --quiet -
-    tar -xzf /tmp/uv.tar.gz -C /tmp
-    mkdir -p "${HOME}/.local/bin"
-    install -m 0755 /tmp/uv-x86_64-unknown-linux-gnu/uv "${HOME}/.local/bin/uv"
-    rm -rf /tmp/uv.tar.gz /tmp/uv-x86_64-unknown-linux-gnu
+    local temp_dir archive http_code curl_exit attempt retryable
+    temp_dir="$(mktemp -d)"
+    archive="${temp_dir}/uv.tar.gz"
+    for attempt in 1 2 3; do
+        # pinning-ignore: UV_SHA256 is verified after retries and before extraction
+        if http_code="$(curl -LsSf --proto '=https' --proto-redir '=https' \
+            --connect-timeout 10 --max-time 35 -w '%{http_code}' \
+            "https://github.com/astral-sh/uv/releases/download/${UV_VERSION}/uv-x86_64-unknown-linux-gnu.tar.gz" \
+            -o "$archive")"; then
+            curl_exit=0
+        else
+            curl_exit=$?
+        fi
+        if (( curl_exit == 0 )) && [[ "$http_code" == "200" ]]; then
+            break
+        fi
+        retryable=false
+        if (( curl_exit == 22 )) && { [[ "$http_code" == "408" || "$http_code" == "429" ]] ||
+            [[ "$http_code" =~ ^5[0-9][0-9]$ ]]; }; then
+            retryable=true
+        elif [[ "$http_code" == "000" ]] && [[ "$curl_exit" =~ ^(5|6|7|28|52|55|56)$ ]]; then
+            retryable=true
+        fi
+        rm -f -- "$archive"
+        if [[ "$retryable" != true || "$attempt" -eq 3 ]]; then
+            rmdir -- "$temp_dir"
+            fatal "uv download failed (curl exit ${curl_exit}, HTTP ${http_code}, attempt ${attempt}/3)"
+        fi
+        sleep 2
+    done
+    if ! echo "${UV_SHA256}  ${archive}" | sha256sum -c --quiet -; then
+        rm -f -- "$archive"
+        rmdir -- "$temp_dir"
+        fatal "uv archive checksum mismatch"
+    fi
+    if ! tar -tzf "$archive" > /dev/null || ! tar -xzf "$archive" -C "$temp_dir" ||
+        [[ ! -f "${temp_dir}/uv-x86_64-unknown-linux-gnu/uv" ]]; then
+        rm -rf -- "$temp_dir"
+        fatal "uv archive is invalid: ${archive}"
+    fi
+    if ! mkdir -p "${HOME}/.local/bin" ||
+        ! install -m 0755 "${temp_dir}/uv-x86_64-unknown-linux-gnu/uv" "${HOME}/.local/bin/uv"; then
+        rm -rf -- "$temp_dir"
+        fatal "uv installation failed"
+    fi
+    rm -rf -- "$temp_dir"
     export PATH="${HOME}/.local/bin:${PATH}"
 }
 
@@ -168,6 +240,9 @@ smoke_image() {
     section "Runtime-image import smoke: ${domain}"
 
     local python_exec runtime_project="$project"
+    local isaac_provided_re='^(torch|torchvision|triton|cuda-bindings|cuda-pathfinder|cuda-toolkit|nvidia-(cu|nccl|nvjitlink|nvshmem|nvtx)[a-z0-9.-]*)=='
+    local -a install_args
+    local runtime_site_packages
     if [[ "$domain" == "il" || "$domain" == "vla" || "$domain" == "evaluation" ]]; then
         # Published PyTorch images ship Python 3.11; LeRobot needs >= 3.12.
         # Provision 3.12 in a venv, exactly as the production entry scripts do.
@@ -192,10 +267,20 @@ smoke_image() {
         python_exec="/isaac-sim/kit/python/bin/python3"
         [[ -x "$python_exec" ]] || python_exec="python3"
         export UV_PYTHON="$python_exec"
-        # Mirror production (training/rl/scripts/train.sh): install the committed
-        # lock with --no-deps onto the real interpreter.
+        if [[ -w "$($python_exec -c 'import site; print(site.getsitepackages()[0])')" ]]; then
+            install_args=(--no-cache-dir --no-deps --reinstall --system --requirement -)
+        else
+            runtime_site_packages="/tmp/smoke-runtime-site-packages-${domain}"
+            rm -rf "$runtime_site_packages"
+            mkdir -p "$runtime_site_packages"
+            export PYTHONPATH="${runtime_site_packages}:${PYTHONPATH:-}"
+            install_args=(--no-cache-dir --no-deps --reinstall --target "$runtime_site_packages" --requirement -)
+        fi
+
+        # Preserve the container's matched Torch/CUDA stack, as in production.
         uv export --frozen --no-hashes --no-emit-project --project "$project" \
-            | uv pip install --no-cache-dir --no-deps --system --requirement -
+            | grep -Ev "$isaac_provided_re" \
+            | uv pip install "${install_args[@]}"
     fi
 
     run_probe "$python_exec"
@@ -210,21 +295,23 @@ run_probe() {
 #------------------------------------------------------------------------------
 # Main
 #------------------------------------------------------------------------------
-cd "$REPO_ROOT"
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    cd "$REPO_ROOT"
 
-# Bootstrap uv when absent (in-container image mode); no-op when setup-uv
-# already provided it (CPU mode on the runner).
-ensure_uv
+    # Bootstrap uv when absent (in-container image mode); no-op when setup-uv
+    # already provided it (CPU mode on the runner).
+    ensure_uv
 
-if [[ "$mode" == "cpu" ]]; then
-    smoke_cpu
-else
-    smoke_image
+    if [[ "$mode" == "cpu" ]]; then
+        smoke_cpu
+    else
+        smoke_image
+    fi
+
+    section "Smoke Summary"
+    print_kv "Domain" "$domain"
+    print_kv "Mode" "$mode"
+    print_kv "Project" "$project"
+    print_kv "Python" "$py_version"
+    info "Import smoke passed"
 fi
-
-section "Smoke Summary"
-print_kv "Domain" "$domain"
-print_kv "Mode" "$mode"
-print_kv "Project" "$project"
-print_kv "Python" "$py_version"
-info "Import smoke passed"

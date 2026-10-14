@@ -5,7 +5,7 @@ description = "API for LeRobot episode annotation system"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi==0.141.1",
-    "uvicorn[standard]==0.53.0",
+    "uvicorn[standard]==0.54.0",
     "pydantic==2.13.5",
     "python-multipart==0.0.32",
     "python-dotenv==1.2.3",
@@ -15,22 +15,13 @@ dependencies = [
     "pyarrow==25.0.1",
     "Pillow==12.3.0",
     "av==18.1.0",
-    "cachetools==7.1.8",
+    "cachetools==7.2.0",
 ]
 
 [project.optional-dependencies]
-dev = [
-    "ruff==0.16.7",
-    "pytest==9.1.1",
-    "pytest-asyncio==1.4.0",
-    "pytest-cov==7.1.0",
-    "httpx==0.28.1",
-    "hypothesis==6.168.0",
-    "schemathesis==4.27.1",
-]
 azure = [
     "aiohttp==3.14.3",
-    "azure-storage-blob==12.30.1",
+    "azure-storage-blob==12.30.3",
     "azure-identity==1.25.3",
 ]
 analysis = [
@@ -39,10 +30,10 @@ analysis = [
     "pandas==3.0.5",
 ]
 huggingface = [
-    "huggingface-hub==1.31.0",
+    "huggingface-hub==1.33.0",
 ]
 auth = [
-    "pyjwt[crypto]==2.14.0",
+    "pyjwt[crypto]==2.15.0",
 ]
 hdf5 = [
     "h5py==3.16.0",
@@ -51,12 +42,25 @@ export = [
     "h5py==3.16.0",
 ]
 yolo = [
-    "ultralytics==8.4.152",
+    "ultralytics==8.4.163",
 ]
 vlm-judge = [
+    "physical-ai-vlm-judge==0.1.0",
     "accelerate==1.15.0",
     "torch==2.14.0",
     "transformers==5.17.0",
+]
+
+[dependency-groups]
+dev = [
+    "physical-ai-vlm-judge==0.1.0",
+    "ruff==0.16.9",
+    "pytest==9.1.1",
+    "pytest-asyncio==1.4.0",
+    "pytest-cov==7.1.0",
+    "httpx==0.28.1",
+    "hypothesis==6.168.1",
+    "schemathesis==4.28.0",
 ]
 
 [build-system]
@@ -70,11 +74,15 @@ packages = ["src"]
 extend = "../../../pyproject.toml"
 
 [tool.ruff.lint]
+extend-select = ["T201"]
 ignore = [
     "B008", # Depends() in function defaults is a FastAPI pattern
     "B905", # zip() without strict= is acceptable
     "B904", # Exception cause via constructor, not raise-from
 ]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"tests/**/*.py" = ["T201"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["backend"]
@@ -90,6 +98,9 @@ constraint-dependencies = [
     "starlette==1.6.0",
     "pygments==2.21.0",
 ]
+
+[tool.uv.sources]
+physical-ai-vlm-judge = { path = "../../../evaluation/vlm_judge", editable = true }
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

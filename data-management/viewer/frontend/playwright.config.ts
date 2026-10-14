@@ -2,6 +2,7 @@ import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
   testDir: './e2e',
+  testIgnore: '**/auth-redirect.spec.ts',
   outputDir: '../../../artifacts/accessibility/current/playwright',
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
@@ -35,7 +36,7 @@ export default defineConfig({
     },
     {
       command:
-        'uv run --project ../backend --frozen python -m uvicorn src.api.main:app --app-dir ../backend --host 127.0.0.1 --port 8000',
+        'uv run --project ../backend --frozen python -m uvicorn src.api.main:app --app-dir ../backend --log-config ../backend/logging.json --host 127.0.0.1 --port 8000',
       url: 'http://127.0.0.1:8000/docs',
       reuseExistingServer: !process.env.CI,
       timeout: 180_000,

@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
-import asyncio
 import os
 
 import pytest
 from fastapi.testclient import TestClient
+
+from src.api.middleware import ContentSizeLimitMiddleware, SecurityHeadersMiddleware
 
 
 @pytest.fixture
@@ -21,9 +22,9 @@ def security_client(tmp_path):
     ds_mod._dataset_service = None
     ann_mod._annotation_service = None
 
-    from src.api.main import app
+    import src.api.main as main_mod
 
-    with TestClient(app) as c:
+    with TestClient(main_mod.app) as c:
         yield c
 
     config_mod._app_config = None
@@ -186,26 +187,24 @@ class TestEnhancedHealthCheck:
         assert "api" in data["checks"]
         assert "storage" in data["checks"]
 
-    def test_degraded_returns_503(self, tmp_path):
-        """Health returns 503 when storage path does not exist."""
+    def test_startup_rejects_missing_storage(self, tmp_path, monkeypatch):
+        """Application startup fails when local storage does not exist."""
         import src.api.config as config_mod
         import src.api.services.annotation_service as ann_mod
         import src.api.services.dataset_service as ds_mod
 
         nonexistent = str(tmp_path / "does_not_exist")
-        os.environ["DATA_DIR"] = nonexistent
+        monkeypatch.setenv("DATA_DIR", nonexistent)
         config_mod._app_config = None
         ds_mod._dataset_service = None
         ann_mod._annotation_service = None
 
-        from src.api.main import app
+        import src.api.main as main_mod
 
-        with TestClient(app) as c:
-            resp = c.get("/health")
-            data = resp.json()
-            assert data["checks"]["storage"] == "unhealthy"
-            assert data["status"] == "degraded"
-            assert resp.status_code == 503
+        monkeypatch.setattr(main_mod, "_config", config_mod.load_config())
+
+        with pytest.raises(RuntimeError, match=r"Local storage path .* is not writable"), TestClient(main_mod.app):
+            pass
 
         config_mod._app_config = None
         ds_mod._dataset_service = None
@@ -236,9 +235,9 @@ class TestDetectionSecurity:
         ann_mod._annotation_service = None
         auth_mod.reset_auth_provider()
 
-        from src.api.main import app
+        import src.api.main as main_mod
 
-        with TestClient(app) as c:
+        with TestClient(main_mod.app) as c:
             resp = c.delete(
                 "/api/datasets/test/episodes/0/detections",
                 headers={"X-API-Key": "test-key"},
@@ -268,9 +267,9 @@ class TestDetectionSecurity:
         """ImportError during detection returns 503 with install hint."""
         from unittest.mock import AsyncMock, MagicMock
 
+        import src.api.main as main_mod
         import src.api.services.dataset_service as ds_mod
         import src.api.services.detection_service as det_mod
-        from src.api.main import app
 
         mock_episode = MagicMock()
         mock_episode.meta.length = 5
@@ -283,8 +282,8 @@ class TestDetectionSecurity:
         mock_det = MagicMock()
         mock_det.detect_episode = AsyncMock(side_effect=ImportError("No module named 'ultralytics'"))
 
-        app.dependency_overrides[ds_mod.get_dataset_service] = lambda: mock_ds
-        app.dependency_overrides[det_mod.get_detection_service] = lambda: mock_det
+        main_mod.app.dependency_overrides[ds_mod.get_dataset_service] = lambda: mock_ds
+        main_mod.app.dependency_overrides[det_mod.get_detection_service] = lambda: mock_det
         try:
             resp = security_client.post(
                 "/api/datasets/test-ds/episodes/0/detect",
@@ -293,16 +292,16 @@ class TestDetectionSecurity:
             assert resp.status_code == 503
             assert "YOLO" in resp.json()["detail"]
         finally:
-            app.dependency_overrides.pop(ds_mod.get_dataset_service, None)
-            app.dependency_overrides.pop(det_mod.get_detection_service, None)
+            main_mod.app.dependency_overrides.pop(ds_mod.get_dataset_service, None)
+            main_mod.app.dependency_overrides.pop(det_mod.get_detection_service, None)
 
     def test_detect_generic_exception_returns_500(self, security_client):
         """Generic exception during detection returns 500."""
         from unittest.mock import AsyncMock, MagicMock
 
+        import src.api.main as main_mod
         import src.api.services.dataset_service as ds_mod
         import src.api.services.detection_service as det_mod
-        from src.api.main import app
 
         mock_episode = MagicMock()
         mock_episode.meta.length = 5
@@ -315,8 +314,8 @@ class TestDetectionSecurity:
         mock_det = MagicMock()
         mock_det.detect_episode = AsyncMock(side_effect=RuntimeError("GPU out of memory"))
 
-        app.dependency_overrides[ds_mod.get_dataset_service] = lambda: mock_ds
-        app.dependency_overrides[det_mod.get_detection_service] = lambda: mock_det
+        main_mod.app.dependency_overrides[ds_mod.get_dataset_service] = lambda: mock_ds
+        main_mod.app.dependency_overrides[det_mod.get_detection_service] = lambda: mock_det
         try:
             resp = security_client.post(
                 "/api/datasets/test-ds/episodes/0/detect",
@@ -325,8 +324,8 @@ class TestDetectionSecurity:
             assert resp.status_code == 500
             assert resp.json()["detail"] == "Detection failed"
         finally:
-            app.dependency_overrides.pop(ds_mod.get_dataset_service, None)
-            app.dependency_overrides.pop(det_mod.get_detection_service, None)
+            main_mod.app.dependency_overrides.pop(ds_mod.get_dataset_service, None)
+            main_mod.app.dependency_overrides.pop(det_mod.get_detection_service, None)
 
 
 # ============================================================================
@@ -337,9 +336,9 @@ class TestDetectionSecurity:
 class TestSecurityHeadersMiddleware:
     """Unit tests for SecurityHeadersMiddleware ASGI class."""
 
-    def test_adds_headers_to_http_response(self):
-        from src.api.middleware import SecurityHeadersMiddleware
+    pytestmark = pytest.mark.asyncio
 
+    async def test_adds_headers_to_http_response(self):
         captured_headers = []
 
         async def dummy_app(scope, receive, send):
@@ -355,16 +354,18 @@ class TestSecurityHeadersMiddleware:
             if message["type"] == "http.response.start":
                 captured_headers.extend(message["headers"])
 
-        asyncio.run(mw({"type": "http", "path": "/other", "headers": []}, mock_receive, mock_send))
+        await mw({"type": "http", "path": "/other", "headers": []}, mock_receive, mock_send)
 
-        header_names = [h[0] for h in captured_headers]
-        assert b"x-content-type-options" in header_names
-        assert b"x-frame-options" in header_names
-        assert b"content-security-policy" in header_names
+        assert dict(captured_headers) == {
+            b"x-content-type-options": b"nosniff",
+            b"x-frame-options": b"DENY",
+            b"referrer-policy": b"strict-origin-when-cross-origin",
+            b"permissions-policy": b"geolocation=(), microphone=(), camera=()",
+            b"cross-origin-opener-policy": b"same-origin",
+            b"content-security-policy": SecurityHeadersMiddleware.CSP_HEADER[1],
+        }
 
-    def test_no_csp_on_api_paths(self):
-        from src.api.middleware import SecurityHeadersMiddleware
-
+    async def test_no_csp_on_api_paths(self):
         captured_headers = []
 
         async def dummy_app(scope, receive, send):
@@ -379,27 +380,21 @@ class TestSecurityHeadersMiddleware:
             if message["type"] == "http.response.start":
                 captured_headers.extend(message["headers"])
 
-        asyncio.run(mw({"type": "http", "path": "/api/datasets", "headers": []}, mock_receive, mock_send))
+        await mw({"type": "http", "path": "/api/datasets", "headers": []}, mock_receive, mock_send)
 
-        header_names = [h[0] for h in captured_headers]
-        assert b"x-content-type-options" in header_names
-        assert b"content-security-policy" not in header_names
+        assert captured_headers == SecurityHeadersMiddleware.HEADERS
 
-    def test_skips_non_http_scopes(self):
-        from src.api.middleware import SecurityHeadersMiddleware
-
+    async def test_skips_non_http_scopes(self):
         calls = []
 
         async def dummy_app(scope, receive, send):
             calls.append(scope["type"])
 
         mw = SecurityHeadersMiddleware(dummy_app)
-        asyncio.run(mw({"type": "websocket"}, None, None))
+        await mw({"type": "websocket"}, None, None)
         assert calls == ["websocket"]
 
-    def test_skips_docs_paths(self):
-        from src.api.middleware import SecurityHeadersMiddleware
-
+    async def test_skips_docs_paths(self):
         captured_headers = []
 
         async def dummy_app(scope, receive, send):
@@ -413,17 +408,16 @@ class TestSecurityHeadersMiddleware:
 
         for path in ("/docs", "/redoc", "/openapi.json"):
             captured_headers.clear()
-            asyncio.run(mw({"type": "http", "path": path, "headers": []}, None, mock_send))
-            header_names = [h[0] for h in captured_headers]
-            assert b"content-security-policy" not in header_names, f"CSP should not be on {path}"
+            await mw({"type": "http", "path": path, "headers": []}, None, mock_send)
+            assert captured_headers == [], f"security headers should not be added to {path}"
 
 
 class TestContentSizeLimitMiddleware:
     """Unit tests for ContentSizeLimitMiddleware ASGI class."""
 
-    def test_rejects_large_content_length(self):
-        from src.api.middleware import ContentSizeLimitMiddleware
+    pytestmark = pytest.mark.asyncio
 
+    async def test_rejects_large_content_length(self):
         captured = []
 
         async def dummy_app(scope, receive, send):
@@ -438,14 +432,14 @@ class TestContentSizeLimitMiddleware:
             captured.append(message)
 
         scope = {"type": "http", "headers": [(b"content-length", b"200")]}
-        asyncio.run(mw(scope, mock_receive, mock_send))
+        await mw(scope, mock_receive, mock_send)
 
         status = next(m for m in captured if m["type"] == "http.response.start")
         assert status["status"] == 413
+        body = b"".join(m.get("body", b"") for m in captured if m["type"] == "http.response.body")
+        assert body == b'{"detail":"Request body too large"}'
 
-    def test_allows_small_body(self):
-        from src.api.middleware import ContentSizeLimitMiddleware
-
+    async def test_allows_small_body(self):
         app_called = []
 
         async def dummy_app(scope, receive, send):
@@ -457,12 +451,10 @@ class TestContentSizeLimitMiddleware:
             return {"type": "http.request", "body": b"small"}
 
         scope = {"type": "http", "headers": [(b"content-length", b"5")]}
-        asyncio.run(mw(scope, mock_receive, lambda m: None))
-        assert app_called
+        await mw(scope, mock_receive, lambda m: None)
+        assert app_called == [True]
 
-    def test_rejects_streaming_body_exceeding_limit(self):
-        from src.api.middleware import ContentSizeLimitMiddleware
-
+    async def test_rejects_streaming_body_exceeding_limit(self):
         captured = []
         chunk_count = 0
 
@@ -490,27 +482,26 @@ class TestContentSizeLimitMiddleware:
             captured.append(message)
 
         scope = {"type": "http", "headers": []}
-        asyncio.run(mw(scope, mock_receive, mock_send))
+        await mw(scope, mock_receive, mock_send)
 
         status = next(m for m in captured if m["type"] == "http.response.start")
         assert status["status"] == 413
+        body = b"".join(m.get("body", b"") for m in captured if m["type"] == "http.response.body")
+        assert body == b'{"detail":"Request body too large"}'
+        assert chunk_count == 1
 
-    def test_skips_non_http_scopes(self):
-        from src.api.middleware import ContentSizeLimitMiddleware
-
+    async def test_skips_non_http_scopes(self):
         calls = []
 
         async def dummy_app(scope, receive, send):
             calls.append(scope["type"])
 
         mw = ContentSizeLimitMiddleware(dummy_app)
-        asyncio.run(mw({"type": "websocket"}, None, None))
+        await mw({"type": "websocket"}, None, None)
         assert calls == ["websocket"]
 
-    def test_invalid_content_length_passes_through(self):
+    async def test_invalid_content_length_passes_through(self):
         """Non-numeric Content-Length is ignored and the request proceeds."""
-        from src.api.middleware import ContentSizeLimitMiddleware
-
         app_called = []
 
         async def dummy_app(scope, receive, send):
@@ -522,8 +513,8 @@ class TestContentSizeLimitMiddleware:
             return {"type": "http.request", "body": b"ok"}
 
         scope = {"type": "http", "headers": [(b"content-length", b"not-a-number")]}
-        asyncio.run(mw(scope, mock_receive, lambda m: None))
-        assert app_called
+        await mw(scope, mock_receive, lambda m: None)
+        assert app_called == [True]
 
 
 # ============================================================================
@@ -559,20 +550,20 @@ class TestValidationExceptionHandler:
         ds_mod._dataset_service = None
         ann_mod._annotation_service = None
 
+        import src.api.main as main_mod
         import src.api.services.detection_service as det_mod
-        from src.api.main import app
 
         mock_det = MagicMock()
         mock_det.get_cached = MagicMock(side_effect=RuntimeError("unexpected crash"))
 
-        app.dependency_overrides[det_mod.get_detection_service] = lambda: mock_det
+        main_mod.app.dependency_overrides[det_mod.get_detection_service] = lambda: mock_det
         try:
-            with TestClient(app, raise_server_exceptions=False) as c:
+            with TestClient(main_mod.app, raise_server_exceptions=False) as c:
                 resp = c.get("/api/datasets/test/episodes/0/detections")
                 assert resp.status_code == 500
                 assert resp.json()["detail"] == "Internal server error"
         finally:
-            app.dependency_overrides.pop(det_mod.get_detection_service, None)
+            main_mod.app.dependency_overrides.pop(det_mod.get_detection_service, None)
             config_mod._app_config = None
             ds_mod._dataset_service = None
             ann_mod._annotation_service = None
@@ -596,9 +587,9 @@ class TestHealthCheckBranches:
         mock_service = MagicMock(spec=[])
         ds_mod._dataset_service = mock_service
 
-        from src.api.main import app
+        import src.api.main as main_mod
 
-        with TestClient(app) as c:
+        with TestClient(main_mod.app) as c:
             resp = c.get("/health")
             data = resp.json()
             assert data["checks"]["api"] == "healthy"
@@ -620,14 +611,14 @@ class TestHealthCheckBranches:
         ds_mod._dataset_service = None
         ann_mod._annotation_service = None
 
-        from src.api.main import app
+        import src.api.main as main_mod
 
         def raise_error():
             raise RuntimeError("service init failed")
 
         monkeypatch.setattr(ds_mod, "get_dataset_service", raise_error)
 
-        with TestClient(app) as c:
+        with TestClient(main_mod.app) as c:
             resp = c.get("/health")
             data = resp.json()
             assert data["checks"]["storage"] == "unhealthy"
