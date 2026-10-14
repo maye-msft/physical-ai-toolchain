@@ -14,9 +14,10 @@ resources:
   shm_size: 64g
 
 inputs:
+  # download avoids workload identity failures in the ro_mount data-capability sidecar on Kubernetes compute
   dataset:
     type: uri_folder
-    mode: ro_mount
+    mode: download
     path: azureml:placeholder:1
 command: >-
   env

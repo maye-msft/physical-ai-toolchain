@@ -525,6 +525,8 @@ if [ "${AZURE_UPLOAD:-false}" = "true" ]; then
       'azureml-mlflow==1.62.0.post3' \
       'azure-identity==1.25.3' \
       'azure-ai-ml==1.34.0'
+    # aml_mirror owns its MLflow run; drop the Azure ML job run binding so it does not resume the job run.
+    env -u MLFLOW_RUN_ID -u MLFLOW_EXPERIMENT_ID -u MLFLOW_EXPERIMENT_NAME \
     RUN_ID="${RUN_ID}" OUTPUT_DIR="${OUTPUT_DIR}" \
     TRAINING_FRAMEWORK=groot AML_SOURCE=osmo-train \
       BASE_MODEL="${BASE_MODEL_SOURCE}" \

@@ -49,7 +49,7 @@ done
   exit 1
 }
 export DATASET_PATH="${DATASET_OVERLAY}"
-echo "[azureml] created writable metadata overlay for the read-only dataset mount"
+echo "[azureml] created writable metadata overlay for the dataset input"
 
 if [ "${RESUME:-false}" = "true" ]; then
   : "${RESUME_CHECKPOINT:?RESUME_CHECKPOINT is required when RESUME=true}"
@@ -89,24 +89,20 @@ import urllib.parse
 import urllib.request
 
 # Azure ML jobs expose the compute identity through a per-job MSI endpoint, not VM IMDS.
+# AmlCompute sets MSI_ENDPOINT and MSI_SECRET; Kubernetes compute sets only MSI_ENDPOINT,
+# served by the job's identity sidecar.
 msi_endpoint = os.environ.get("MSI_ENDPOINT")
-msi_secret = os.environ.get("MSI_SECRET")
-if not msi_endpoint or not msi_secret:
-    raise RuntimeError(
-        "MSI_ENDPOINT and MSI_SECRET are required to read HF_TOKEN_SECRET_URL; "
-        "submit the job with a managed identity"
-    )
-identity_query = {
-    "api-version": "2017-09-01",
-    "resource": "https://vault.azure.net",
-}
+if not msi_endpoint:
+    raise RuntimeError("MSI_ENDPOINT is required to read HF_TOKEN_SECRET_URL; submit the job with a managed identity")
+identity_query = {"api-version": "2017-09-01", "resource": "https://vault.azure.net"}
 client_id = os.environ.get("AZURE_CLIENT_ID") or os.environ.get("DEFAULT_IDENTITY_CLIENT_ID")
 if client_id:
     identity_query["clientid"] = client_id
+msi_secret = os.environ.get("MSI_SECRET")
 separator = "&" if "?" in msi_endpoint else "?"
 identity_request = urllib.request.Request(
     msi_endpoint + separator + urllib.parse.urlencode(identity_query),
-    headers={"secret": msi_secret},
+    headers={"secret": msi_secret} if msi_secret else {},
 )
 msi_opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 with msi_opener.open(identity_request, timeout=30) as response:

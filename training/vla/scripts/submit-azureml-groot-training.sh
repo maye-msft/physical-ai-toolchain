@@ -19,7 +19,8 @@ Submit NVIDIA GR00T N1.7 fine-tuning to Azure ML.
 Required:
   --dataset-asset URI       Immutable Azure ML URI-folder data asset
                             (azureml:NAME:VERSION or full ARM-style URI).
-  --compute NAME            Azure ML AmlCompute target.
+  --compute NAME            Azure ML compute target: an AmlCompute cluster or
+                            an Azure ML Kubernetes compute.
 
 Azure:
   --subscription-id ID      Azure subscription.
@@ -36,6 +37,9 @@ Training:
   --save-steps N            Checkpoint interval (default: 50).
   --dataloader-workers N    Data-loader workers (default: 4).
   --num-gpus N              Required visible GPU count (default: 2).
+  --instance-type NAME      InstanceType for Azure ML Kubernetes compute,
+                            forwarded as resources.instance_type. Its GPU
+                            limit must equal --num-gpus. Omit for AmlCompute.
   --modality-config PATH    Local N1.7 modality config file. The submitter
                             embeds it into the immutable Azure ML job.
   --base-model ID           Hugging Face model ID.
@@ -46,7 +50,9 @@ Training:
                             the compute managed identity (preferred).
   --preflight-only          Validate GPU, dataset, GR00T, and modality config.
   --resume-checkpoint URI   Resume optimizer, scheduler, and RNG state from a
-                            versioned Azure ML URI-folder checkpoint output.
+                            prior job's checkpoints: a datastore URI such as
+                            azureml://datastores/workspaceblobstore/paths/azureml/JOB/checkpoints/
+                            or a versioned URI-folder data asset.
   --register-model NAME     Mirror the final checkpoint to an AML model version.
 
 Job:
@@ -77,6 +83,7 @@ max_steps="${MAX_STEPS:-100}"
 save_steps="${SAVE_STEPS:-50}"
 dataloader_workers="${DATALOADER_WORKERS:-4}"
 num_gpus="${NUM_GPUS:-2}"
+instance_type="${AZUREML_INSTANCE_TYPE:-}"
 modality_config="${MODALITY_CONFIG_PATH:-}"
 base_model="${BASE_MODEL:-nvidia/GR00T-N1.7-3B}"
 base_model_revision="${BASE_MODEL_REVISION:-2fc962b973bccdd5d8ce4f67cc63b264d6886495}"
@@ -110,6 +117,7 @@ while [[ $# -gt 0 ]]; do
     --save-steps) save_steps="$2"; shift 2 ;;
     --dataloader-workers) dataloader_workers="$2"; shift 2 ;;
     --num-gpus) num_gpus="$2"; shift 2 ;;
+    --instance-type) instance_type="$2"; shift 2 ;;
     --modality-config) modality_config="$2"; shift 2 ;;
     --base-model) base_model="$2"; shift 2 ;;
     --base-model-revision) base_model_revision="$2"; shift 2 ;;
@@ -196,6 +204,7 @@ if [[ "${config_preview}" == "true" ]]; then
   print_kv "Dataset" "${dataset_asset:-<assets-only>}"
   print_kv "Compute" "${compute}"
   print_kv "GPUs" "${num_gpus}"
+  print_kv "Instance Type" "${instance_type:-<compute default>}"
   print_kv "Batch Size" "${batch_size}"
   print_kv "Max Steps" "${max_steps}"
   print_kv "Modality Config" "${modality_config}"
@@ -230,7 +239,7 @@ if [[ -n "${resume_checkpoint}" ]]; then
     $0 == "command: >-" {
       print "  resume_checkpoint:"
       print "    type: uri_folder"
-      print "    mode: ro_mount"
+      print "    mode: download"
     }
     {
       needle = "RESUME_CHECKPOINT=\"${{inputs.dataset}}\""
@@ -275,6 +284,7 @@ az_args=(
 [[ -n "${managed_identity_client_id}" ]] && \
   az_args+=(--set "environment_variables.AZURE_CLIENT_ID=${managed_identity_client_id}")
 [[ -n "${display_name}" ]] && az_args+=(--set "display_name=${display_name}")
+[[ -n "${instance_type}" ]] && az_args+=(--set "resources.instance_type=${instance_type}")
 [[ -n "${hf_token}" ]] && az_args+=(--set "environment_variables.HF_TOKEN=${hf_token}")
 [[ -n "${hf_token_secret_url}" ]] && \
   az_args+=(--set "environment_variables.HF_TOKEN_SECRET_URL=${hf_token_secret_url}")
