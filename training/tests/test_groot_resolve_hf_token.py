@@ -102,20 +102,46 @@ def test_resolve_token_requires_secret_url() -> None:
         _MOD.resolve_token({"MSI_ENDPOINT": "http://127.0.0.1:1/token"})
 
 
-def test_main_prints_token_without_newline(monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+class _RecordingExec:
+    def __init__(self) -> None:
+        self.calls: list[tuple[str, list[str], dict[str, str]]] = []
+
+    def __call__(self, file: str, args: list[str], env: dict[str, str]) -> None:
+        self.calls.append((file, args, env))
+
+
+def test_main_execs_command_with_token_only_in_its_environment(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
     monkeypatch.setattr(_MOD, "resolve_token", lambda environ: "hf_example")
+    monkeypatch.setenv("KEEP_ME", "1")
+    monkeypatch.delenv("HF_TOKEN", raising=False)
+    execute = _RecordingExec()
 
-    assert _MOD.main([]) == 0
-    assert capsys.readouterr().out == "hf_example"
+    assert _MOD.main(["--", "bash", "train.sh", "--flag"], execute=execute) == 0
+
+    file, args, env = execute.calls[0]
+    assert (file, args) == ("bash", ["bash", "train.sh", "--flag"])
+    assert env["HF_TOKEN"] == "hf_example"
+    assert env["KEEP_ME"] == "1"
+    captured = capsys.readouterr()
+    assert "hf_example" not in captured.out + captured.err
+    assert "loaded Hugging Face token from Key Vault" in captured.out
+    assert "HF_TOKEN" not in _MOD.os.environ
 
 
-def test_main_reports_errors_without_printing_a_token(
+def test_main_reports_errors_without_running_the_command(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     monkeypatch.delenv("MSI_ENDPOINT", raising=False)
     monkeypatch.setenv("HF_TOKEN_SECRET_URL", _SECRET_URL)
+    execute = _RecordingExec()
 
-    assert _MOD.main([]) == 1
-    captured = capsys.readouterr()
-    assert captured.out == ""
-    assert "MSI_ENDPOINT is required" in captured.err
+    assert _MOD.main(["--", "bash", "train.sh"], execute=execute) == 1
+    assert execute.calls == []
+    assert "MSI_ENDPOINT is required" in capsys.readouterr().err
+
+
+def test_main_requires_a_command() -> None:
+    with pytest.raises(SystemExit):
+        _MOD.main(["--"])

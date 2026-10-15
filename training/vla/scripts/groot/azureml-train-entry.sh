@@ -76,14 +76,9 @@ if [ "${RESUME:-false}" = "true" ]; then
   echo "[azureml] linked resume checkpoint: ${latest_resume_checkpoint}"
 fi
 
-if [ -n "${HF_TOKEN_SECRET_URL:-}" ]; then
-  [ -z "${HF_TOKEN:-}" ] || {
-    echo "ERROR: HF_TOKEN and HF_TOKEN_SECRET_URL cannot both be set" >&2
-    exit 1
-  }
-  HF_TOKEN="$(python3 "${SCRIPT_DIR}/resolve_hf_token.py")"
-  export HF_TOKEN
-  echo "[azureml] loaded Hugging Face token from Key Vault"
+if [ -n "${HF_TOKEN_SECRET_URL:-}" ] && [ -n "${HF_TOKEN:-}" ]; then
+  echo "ERROR: HF_TOKEN and HF_TOKEN_SECRET_URL cannot both be set" >&2
+  exit 1
 fi
 
 export DATA_CONFIG="${DATA_CONFIG:-custom_n17}"
@@ -104,4 +99,8 @@ if [ "${AZURE_UPLOAD}" = "true" ]; then
   cp "${TRAINING_ROOT}/utils/aml_mirror.py" /tmp/aml_mirror.py
 fi
 
+if [ -n "${HF_TOKEN_SECRET_URL:-}" ]; then
+  # The helper passes the Key Vault token to the training entry only through its environment.
+  exec python3 "${SCRIPT_DIR}/resolve_hf_token.py" -- bash "${SCRIPT_DIR}/osmo-train-entry.sh"
+fi
 exec bash "${SCRIPT_DIR}/osmo-train-entry.sh"
