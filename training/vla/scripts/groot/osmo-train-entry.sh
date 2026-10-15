@@ -6,6 +6,15 @@ trap 'exit_code=$?; echo "ERROR: command failed (line ${LINENO}): ${BASH_COMMAND
 VLA_ENTRY_START_EPOCH="$(date +%s)"
 export VLA_ENTRY_START_EPOCH
 
+# Python helpers ship next to this script: the repository copy on Azure ML, /tmp on OSMO.
+GROOT_HELPERS_DIR="${GROOT_HELPERS_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
+for helper in verify_prebuilt_runtime.py patch_n17_trainer.py preflight_check.py; do
+  [ -s "${GROOT_HELPERS_DIR}/${helper}" ] || {
+    echo "ERROR: missing GR00T helper ${GROOT_HELPERS_DIR}/${helper}" >&2
+    exit 1
+  }
+done
+
 retry_cmd() {
   local max_attempts="$1"
   shift
@@ -117,27 +126,8 @@ GROOT_IMAGE_METADATA="/opt/groot-n17-image.json"
 GROOT_PREBUILT=false
 if [ -f "${GROOT_IMAGE_METADATA}" ] && [ -d "${GROOT_PREBUILT_ROOT}/.git" ]; then
   cd "${GROOT_PREBUILT_ROOT}"
-  python3 - "${GROOT_IMAGE_METADATA}" "${ISAAC_GROOT_REF}" <<'PY'
-import importlib.metadata
-import json
-import sys
-
-metadata = json.load(open(sys.argv[1], encoding="utf-8"))
-if metadata["isaac_groot_ref"] != sys.argv[2]:
-    raise RuntimeError(
-        f"prebuilt Isaac-GR00T ref {metadata['isaac_groot_ref']} "
-        f"does not match requested ref {sys.argv[2]}"
-    )
-actual = {
-    name: importlib.metadata.version(name)
-    for name in metadata["runtime_versions"]
-}
-if actual != metadata["runtime_versions"]:
-    raise RuntimeError(
-        f"prebuilt runtime versions changed: expected "
-        f"{metadata['runtime_versions']}, found {actual}"
-    )
-PY
+  python3 "${GROOT_HELPERS_DIR}/verify_prebuilt_runtime.py" \
+    --metadata "${GROOT_IMAGE_METADATA}" --groot-ref "${ISAAC_GROOT_REF}"
   [ "$(git rev-parse HEAD)" = "${ISAAC_GROOT_REF}" ] || {
     echo "ERROR: prebuilt Isaac-GR00T checkout does not match ${ISAAC_GROOT_REF}" >&2
     exit 1
@@ -171,61 +161,7 @@ fi
 RESOLVED_GROOT_REF="$(git rev-parse HEAD)"
 export GROOT_PREBUILT RESOLVED_GROOT_REF
 
-if [ -f "gr00t/experiment/experiment.py" ]; then
-  if [ "${RESUME:-false}" = "true" ]; then
-    TRAINER_RESUME_LITERAL="True"
-  else
-    TRAINER_RESUME_LITERAL="False"
-  fi
-  python3 - "gr00t/experiment/experiment.py" "${TRAINER_RESUME_LITERAL}" <<'PY'
-from pathlib import Path
-import sys
-
-path = Path(sys.argv[1])
-resume_literal = sys.argv[2]
-source = path.read_text(encoding="utf-8")
-needle = "trainer.train(resume_from_checkpoint=True)"
-count = source.count(needle)
-if count != 2:
-    raise RuntimeError(f"expected two upstream resume call sites, found {count}")
-path.write_text(
-    source.replace(needle, f"trainer.train(resume_from_checkpoint={resume_literal})"),
-    encoding="utf-8",
-)
-print(f"[setup] patched N1.7 trainer resume={resume_literal}")
-PY
-fi
-
-if [ "${RESUME:-false}" = "true" ] && [ -f "gr00t/experiment/experiment.py" ]; then
-  python3 - "gr00t/experiment/trainer.py" <<'PY'
-from pathlib import Path
-import sys
-
-path = Path(sys.argv[1])
-source = path.read_text(encoding="utf-8")
-needle = """        # During resume, don't skip the data
-        self.args.ignore_data_skip = True
-        curr_global_step = self.state.global_step
-        print(f"Current global step: {curr_global_step}")
-        if curr_global_step > 0:
-            new_seed = self.train_dataset.seed + curr_global_step
-            self.train_dataset.reset_seed(new_seed)
-            print(
-                f"Resetting seed to {new_seed}. Please note that this will make the experiment non-reproducible."
-            )
-"""
-replacement = """        # Preserve checkpoint RNG state and let Trainer skip consumed batches.
-        self.args.ignore_data_skip = False
-        curr_global_step = self.state.global_step
-        print(f"Current global step: {curr_global_step}")
-"""
-count = source.count(needle)
-if count != 1:
-    raise RuntimeError(f"expected one upstream non-deterministic resume block, found {count}")
-path.write_text(source.replace(needle, replacement), encoding="utf-8")
-print("[setup] patched N1.7 Trainer for deterministic data resume")
-PY
-fi
+python3 "${GROOT_HELPERS_DIR}/patch_n17_trainer.py" --groot-root . --resume "${RESUME:-false}"
 
 ACCELERATE_VER="1.14.0"
 NUMPY_VER="1.26.4"
@@ -339,7 +275,7 @@ elif [ -n "${MODALITY_CONFIG_B64:-}" ]; then
 fi
 
 python -c "import torch; p=torch.cuda.get_device_properties(0); print(f'[preflight] GPU: {p.name}  total={p.total_memory/1024**3:.2f} GiB  sm={p.major}.{p.minor}')"
-python -c "import sys, torch; expected=int(sys.argv[1]); actual=torch.cuda.device_count(); print(f'[preflight] visible GPUs: {actual} (expected: {expected})'); assert actual == expected, f'expected {expected} visible GPUs, found {actual}'" "${NUM_GPUS}"
+python "${GROOT_HELPERS_DIR}/preflight_check.py" gpus --expected "${NUM_GPUS}"
 
 VLA_SETUP_SECONDS="$(( $(date +%s) - VLA_ENTRY_START_EPOCH ))"
 export VLA_SETUP_SECONDS
@@ -347,34 +283,8 @@ printf 'VLA_PHASE_TIMING={"entry_to_training_ready_seconds":%s,"prebuilt_depende
   "${VLA_SETUP_SECONDS}" "${GROOT_PREBUILT}"
 
 if [ "${PREFLIGHT_ONLY:-false}" = "true" ]; then
-  python - "${DATASET_PATH}" /tmp/modality_config.py <<'PY'
-import importlib.util
-import pathlib
-import sys
-
-dataset = pathlib.Path(sys.argv[1])
-modality_config = pathlib.Path(sys.argv[2])
-required = (
-    dataset / "meta" / "info.json",
-    dataset / "meta" / "episodes.jsonl",
-    dataset / "meta" / "tasks.jsonl",
-    dataset / "meta" / "modality.json",
-)
-missing = [str(path) for path in required if not path.is_file()]
-if missing:
-    raise FileNotFoundError(f"dataset is missing required metadata: {missing}")
-if not any((dataset / "data").glob("**/*.parquet")):
-    raise FileNotFoundError(f"dataset has no Parquet episodes: {dataset / 'data'}")
-if not any((dataset / "videos").glob("**/*.mp4")):
-    raise FileNotFoundError(f"dataset has no MP4 videos: {dataset / 'videos'}")
-
-spec = importlib.util.spec_from_file_location("submitted_modality_config", modality_config)
-if spec is None or spec.loader is None:
-    raise ImportError(f"cannot load modality config: {modality_config}")
-module = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(module)
-print("[preflight] dataset metadata, GR00T import, and modality registration: PASS")
-PY
+  python "${GROOT_HELPERS_DIR}/preflight_check.py" dataset \
+    --dataset "${DATASET_PATH}" --modality-config /tmp/modality_config.py
   cat > "${OUTPUT_DIR}/preflight-result.json" <<EOF
 {
   "result": "PASS",

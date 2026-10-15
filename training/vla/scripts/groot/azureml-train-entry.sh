@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
-# cspell:ignore clientid
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TRAINING_ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
@@ -82,45 +81,7 @@ if [ -n "${HF_TOKEN_SECRET_URL:-}" ]; then
     echo "ERROR: HF_TOKEN and HF_TOKEN_SECRET_URL cannot both be set" >&2
     exit 1
   }
-  HF_TOKEN="$(python3 - <<'PY'
-import json
-import os
-import urllib.parse
-import urllib.request
-
-# Azure ML jobs expose the compute identity through a per-job MSI endpoint, not VM IMDS.
-# AmlCompute sets MSI_ENDPOINT and MSI_SECRET; Kubernetes compute sets only MSI_ENDPOINT,
-# served by the job's identity sidecar.
-msi_endpoint = os.environ.get("MSI_ENDPOINT")
-if not msi_endpoint:
-    raise RuntimeError("MSI_ENDPOINT is required to read HF_TOKEN_SECRET_URL; submit the job with a managed identity")
-identity_query = {"api-version": "2017-09-01", "resource": "https://vault.azure.net"}
-client_id = os.environ.get("AZURE_CLIENT_ID") or os.environ.get("DEFAULT_IDENTITY_CLIENT_ID")
-if client_id:
-    identity_query["clientid"] = client_id
-msi_secret = os.environ.get("MSI_SECRET")
-separator = "&" if "?" in msi_endpoint else "?"
-identity_request = urllib.request.Request(
-    msi_endpoint + separator + urllib.parse.urlencode(identity_query),
-    headers={"secret": msi_secret} if msi_secret else {},
-)
-msi_opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
-with msi_opener.open(identity_request, timeout=30) as response:
-    access_token = json.load(response)["access_token"]
-
-secret_url = os.environ["HF_TOKEN_SECRET_URL"]
-separator = "&" if "?" in secret_url else "?"
-secret_request = urllib.request.Request(
-    secret_url + separator + "api-version=7.4",
-    headers={"Authorization": f"Bearer {access_token}"},
-)
-with urllib.request.urlopen(secret_request, timeout=30) as response:
-    secret_value = json.load(response)["value"]
-if not secret_value:
-    raise RuntimeError("Hugging Face token secret is empty")
-print(secret_value, end="")
-PY
-)"
+  HF_TOKEN="$(python3 "${SCRIPT_DIR}/resolve_hf_token.py")"
   export HF_TOKEN
   echo "[azureml] loaded Hugging Face token from Key Vault"
 fi
