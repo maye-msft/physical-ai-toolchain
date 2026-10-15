@@ -697,6 +697,72 @@ def assert_aml_job_logs_contain(job: AzureMLJob, repo_root: Path, markers: Seque
     return logs
 
 
+_DATASTORE_PATH_RE = re.compile(r"/datastores/(?P<datastore>[^/]+)/paths/(?P<prefix>.+)$")
+
+
+def assert_registered_model_has_blob_artifacts(
+    repo_root: Path,
+    aml_workspace: AzureMLWorkspace,
+    model: AmlModelRef,
+) -> None:
+    """List a registered model's artifact blobs without downloading multi-GB weights."""
+    from azure.ai.ml import MLClient
+    from azure.identity import DefaultAzureCredential
+    from azure.storage.blob import ContainerClient
+
+    result = run_command(
+        [
+            "az",
+            "ml",
+            "model",
+            "show",
+            "--name",
+            model.name,
+            "--version",
+            model.version,
+            *aml_workspace_args(aml_workspace),
+            "-o",
+            "json",
+        ],
+        cwd=repo_root,
+    )
+    if result.returncode != 0:
+        raise AssertionError(
+            f"Unable to show AzureML model {model.name!r}:{model.version}\n\n{format_command_failure(result)}"
+        )
+    payload = parse_json_from_output(result.stdout)
+    path = payload.get("path") if isinstance(payload, Mapping) else None
+    match = _DATASTORE_PATH_RE.search(path) if isinstance(path, str) else None
+    if match is None:
+        raise AssertionError(f"AzureML model {model.name!r}:{model.version} has no datastore path: {path!r}")
+
+    credential = DefaultAzureCredential()
+    client = MLClient(
+        credential=credential,
+        subscription_id=aml_workspace.subscription_id,
+        resource_group_name=aml_workspace.resource_group,
+        workspace_name=aml_workspace.workspace_name,
+    )
+    datastore = client.datastores.get(match.group("datastore"))
+    container = ContainerClient(
+        account_url=f"https://{datastore.account_name}.blob.core.windows.net",
+        container_name=datastore.container_name,
+        credential=credential,
+    )
+    prefix = match.group("prefix").rstrip("/") + "/"
+    with container:
+        blobs = list(container.list_blobs(name_starts_with=prefix))
+    if not blobs:
+        raise AssertionError(f"AzureML model {model.name!r}:{model.version} has no artifact files under {prefix}")
+
+    size_gib = sum(blob.size or 0 for blob in blobs) / 1024**3
+    sample = ", ".join(sorted(blob.name.removeprefix(prefix) for blob in blobs)[:5])
+    log_e2e(
+        f"AzureML model artifacts passed: model={model.name}:{model.version}, "
+        f"artifacts={len(blobs)}, size={size_gib:.2f} GiB; sample: {sample}"
+    )
+
+
 _AML_LEROBOT_EVAL_MODEL_ENV = "E2E_AML_LEROBOT_EVAL_MODEL"
 _AML_ISAAC_EVAL_MODEL_ENV = "E2E_AML_ISAAC_EVAL_MODEL"
 

@@ -46,7 +46,7 @@ from tests.e2e._aml import (
     archive_aml_data_asset,
     assert_aml_job_logs_contain,
     assert_job_has_checkpoint,
-    assert_registered_model_has_artifacts,
+    assert_registered_model_has_blob_artifacts,
     cancel_aml_job,
     cleanup_aml_job_and_model_versions,
     register_aml_uri_folder_data_asset,
@@ -158,7 +158,7 @@ def test_aml_groot_n17_lifecycle_e2e(
     assert_job_has_checkpoint(resume_job)
 
     model = resolve_registered_model(repo_root, aml_workspace, model_name=register_model_name)
-    assert_registered_model_has_artifacts(repo_root, aml_workspace, model)
+    assert_registered_model_has_blob_artifacts(repo_root, aml_workspace, model)
 
     log_e2e(
         "AzureML GR00T N1.7 lifecycle evidence: "
